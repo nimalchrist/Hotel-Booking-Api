@@ -1,10 +1,15 @@
+const mongoose=require("mongoose");
 const express = require("express");
 require("dotenv").config();
 const app = express();
-const PORT = process.env.SERVER_PORT;
+const PORT = 3000;
 
 //middlewares section
-
+mongoose.connect('mongodb://127.0.0.1:27017/hotel_management',
+ {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 //listen section
 app.listen(PORT, (error) => {
   if (error) {

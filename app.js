@@ -1,15 +1,32 @@
 const express = require("express");
-require("dotenv").config();
+const mongoose = require("mongoose");
+const routes = require('./routes/routes');
+
 const app = express();
-const PORT = process.env.SERVER_PORT;
+app.use(express.json());
+app.use("/",routes);
 
-//middlewares section
+mongoose.set("debug", true);
 
-//listen section
-app.listen(PORT, (error) => {
-  if (error) {
-    console.log("Error: ", error);
-    throw error;
-  }
-  console.log("Server started at: ", PORT);
-});
+const connectToDatabase = async () => {
+  try {
+    await mongoose.connect("mongodb://127.0.0.1:27017/booking_hotel", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 15000,
+    });
+    console.log("Connected to MongoDB");
+  } catch (error) {
+    console.error("Failed to connect to MongoDB", error);
+  }
+};
+
+const startServer = () => {
+  const PORT = 3000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+};
+
+connectToDatabase();
+startServer();

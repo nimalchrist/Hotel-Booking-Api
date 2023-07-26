@@ -1,0 +1,22 @@
+{
+  "name": "hotelbookingapi",
+  "version": "1.0.0",
+  "description": "the backend api ",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nimalchrist/HotelBookingApi.git"
+  },
+  "author": "gcetly",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nimalchrist/HotelBookingApi/issues"
+  },
+  "homepage": "https://github.com/nimalchrist/HotelBookingApi#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

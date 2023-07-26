@@ -9,6 +9,7 @@ Here are the packages installed for this project:
 - express
 - nodemon
 - dotenv
+- mongoose
 
 ## Note
 

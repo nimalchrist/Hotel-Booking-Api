@@ -1,11 +1,13 @@
 // TODO the definition of users model
 const mongoose = require("mongoose");
-
+const encryptionUtil = require('../utils/utils');
 const cardSchema = new mongoose.Schema({
   cardNumber: {
     type: String,
     required: true,
     unique: true,
+    set: encryptionUtil.encrypt, // Encrypt the card number before saving
+    get: encryptionUtil.decrypt, // Decrypt the card number when accessed
   },
   cardHolder: {
     type: String,
@@ -18,6 +20,8 @@ const cardSchema = new mongoose.Schema({
   cvv: {
     type: String,
     required: true,
+    set: encryptionUtil.encrypt, // Encrypt the cvv before saving
+    get: encryptionUtil.decrypt, // Decrypt the cvv when accessed
   },
 });
 

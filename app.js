@@ -1,15 +1,24 @@
 const express = require("express");
-require("dotenv").config();
+const route = require("./routes/router");
+
+
 const app = express();
-const PORT = process.env.SERVER_PORT;
 
-//middlewares section
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-//listen section
-app.listen(PORT, (error) => {
-  if (error) {
-    console.log("Error: ", error);
-    throw error;
-  }
-  console.log("Server started at: ", PORT);
+// Routes
+app.use("/",route);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: "Internal Server Error" });
 });
+
+app.listen(8080, () => {
+    console.log('Server listening');
+  });
+
+

@@ -1,12 +1,13 @@
-const express = require("express");
-require("dotenv").config();
+const express = require('express');
+const mongoose = require('mongoose');
+require('dotenv').config();
 const app = express();
-const PORT = process.env.SERVER_PORT;
+const PORT = process.env.SERVER_PORT  // Use the specified port in the .env file or 3000 as the default
+
 // Import routes
 const usersRoute = require('./routes/users.route');
 
-
-//middlewares section
+// Middlewares
 app.use(express.json()); // Parse JSON requests
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded requests
 
@@ -15,7 +16,6 @@ const atlasUri = process.env.MONGODB_ATLAS_URI; // Get the connection string fro
 mongoose.connect(atlasUri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useCreateIndex: true,
 });
 
 // MongoDB connection event handlers
@@ -25,12 +25,10 @@ db.on('error', (error) => {
 });
 db.once('open', () => {
   console.log('Connected to MongoDB Atlas');
-})
+});
 
 // Use the usersRoute for handling user-related endpoints
 app.use("/user", usersRoute);
-
-
 
 //listen section
 app.listen(PORT, (error) => {

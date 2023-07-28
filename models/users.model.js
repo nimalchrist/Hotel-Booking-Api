@@ -23,6 +23,11 @@ const cardSchema = new mongoose.Schema({
     set: utils.encrypt, // Encrypt the cvv before saving
     get: utils.decrypt, // Decrypt the cvv when accessed
   },
+  cardName: {
+    type: String,
+    enum: ['MasterCard', 'Visa', 'American Express', 'Unknown'],
+    default: 'Unknown',
+  },
 });
 
 const userSchema = new mongoose.Schema({

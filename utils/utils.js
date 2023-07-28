@@ -1,29 +1,29 @@
-// encryption decryption files will be there...
-const crypto = require('crypto');
+const crypto = require("crypto");
 require("dotenv").config();
+const algorithm = process.env.ENCRYPTION_ALGORITHM;
+const key = crypto
+  .createHash("sha256")
+  .update(process.env.ENCRYPTION_KEY)
+  .digest();
 
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
-const IV_LENGTH = process.env.IV_LENGTH;
 
-function encrypt(text) {
-  const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
-  let encrypted = cipher.update(text);
-  encrypted = Buffer.concat([encrypted, cipher.final()]);
-  return `${iv.toString('hex')}:${encrypted.toString('hex')}`;
-}
+exports.encrypt = (plaintext) => {
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv(algorithm, Buffer.from(key, "utf8"), iv);
+  let encrypted = cipher.update(plaintext, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return iv.toString("hex") + ":" + encrypted;
+};
 
-function decrypt(text) {
-  const parts = text.split(':');
-  const iv = Buffer.from(parts[0], 'hex');
-  const encryptedText = Buffer.from(parts[1], 'hex');
-  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
-  let decrypted = decipher.update(encryptedText);
-  decrypted = Buffer.concat([decrypted, decipher.final()]);
-  return decrypted.toString();
-}
-
-module.exports = {
-  encrypt,
-  decrypt,
+exports.decrypt = (encryptedText) => {
+  const [ivHex, encryptedHex] = encryptedText.split(":");
+  const iv = Buffer.from(ivHex, "hex");
+  const decipher = crypto.createDecipheriv(
+    algorithm,
+    Buffer.from(key, "utf8"),
+    iv
+  );
+  let decrypted = decipher.update(encryptedHex, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+  return decrypted;
 };

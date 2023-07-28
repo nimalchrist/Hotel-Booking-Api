@@ -3,47 +3,61 @@ const Hotel = require("./model");
 
 
 async function handleSearchRequest(req, res) {
-  try {
-    //await connectToDatabase();
-
-    const searchTerm = req.query.q; 
-      console.log(searchTerm);
-      
-    if (!searchTerm) {
-      return res.status(400).json({ error: "Search term is missing." });
-    }
-
-    const searchCriteria = searchTerm.split(" ");
-    const searchResults = await Hotel.aggregate([
-      {
-        $search: {
-          index: "default",
-          autocomplete: {
-            query: searchCriteria.join(" "),
-            path: ["hotelName", "location.cityName", "location.address"],
-            fuzzy: {
-              maxEdits: 2, 
+    try {
+      const searchTerm = req.query.q;
+      const checkInDate = req.query.checkIn;
+      const checkOutDate = req.query.checkOut;
+      const numberOfRooms = parseInt(req.query.rooms);
+      //const numberOfGuests = parseInt(req.query.guests);
+  
+      if (!searchTerm) {
+        return res.status(400).json({ error: "Search term is missing." });
+      }
+  
+      // Parse the search query to identify different search criteria (hotel name, location, city)
+      const searchCriteria = searchTerm.split(" ");
+      console.log(searchCriteria);
+      // Construct the Atlas Search query to search indexed fields for the search criteria
+      const searchResults = await Hotel.aggregate([
+        {
+          $search: {
+            //index: "default",
+            text: {
+              query: searchCriteria.join(" "), // Join the search terms with space to form the query
+              path: ["hotelName", "location.cityName", "location.address"], // Fields to search in
             },
           },
         },
-      },
-    ]).exec();
-    //       text: {
-    //         query: searchCriteria.join(" "), // Join the search terms with space to form the query
-    //         path: ["hotelName", "location.cityName", "location.address"], // Fields to search in
-    //       },
-    //     },
-    //   },
-    // ]).exec();
-    console.log(searchResults);
-    res.json(searchResults);
-  } catch (error) {
-    console.error("Error in handleSearchRequest:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while processing the search." });
+        // Optional: Add more aggregation stages if needed for filtering, sorting, etc.
+      ]).exec();
+      console.log(searchResults);
+      // Check if there are hotels with available rooms
+      const hasAvailableRooms = searchResults.some(hotel => {
+        return hotel.totalRooms >= numberOfRooms;
+      });
+      console.log(hasAvailableRooms);
+      if (hasAvailableRooms) {
+        // Filter search results based on available rooms
+        const filteredResults = searchResults.filter(hotel => {
+          return hotel.rooms.some(room => {
+            return room.availability >= numberOfRooms;
+          });
+        });
+        console.log(filteredResults)
+        // Return the filtered search results as a JSON response
+        res.json(filteredResults);
+    }
+  else{
+    res.json("no hotels fount");
+    console.log("no hotels found");
+  }}
+     catch (error) {
+      console.error("Error in handleSearchRequest:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while processing the search." });
+    }
   }
-}
 
 
 async function deleteHotelById(req, res) {

@@ -2,6 +2,8 @@ const express = require("express");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/users.route");
+const session = require("express-session");
+const passport = require("passport");
 const app = express();
 const PORT = process.env.SERVER_PORT;
 const DB_URI = process.env.DATABASE_URI;
@@ -20,16 +22,26 @@ async function connectToDatabase() {
 }
 connectToDatabase();
 
-
 //middlewares section
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/auth", authRoutes);
 app.use((err, req, res, next) => {
   console.error("Error occurred: ", err);
   res.status(500).json({ message: "Internal server error" });
 });
-
+app.use(
+  session({
+    secret: process.env.ENCRYPTION_KEY,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 86400000,
+    },
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+app.use("/auth", authRoutes);
 
 //listen section
 app.listen(PORT, (error) => {

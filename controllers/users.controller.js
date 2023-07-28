@@ -1,4 +1,5 @@
 // TODO the controllers of users collection
+const passport = require("../authentication/localAuthentication");
 const users = require("../models/users.model");
 const userServices = require("../services/users.service");
 const utilities = require("../utils/utils");
@@ -17,7 +18,7 @@ validateSchema = joi.object({
   confirmPassword: joi.ref("password"),
 });
 
-// register controller
+// local register controller
 exports.localAuthRegistrationController = async (req, res) => {
   try {
     const {
@@ -70,4 +71,24 @@ exports.localAuthRegistrationController = async (req, res) => {
   } catch (error) {
     console.log("Error Occured: ", error);
   }
+};
+
+// login controller
+exports.loginController = (req, res, next) => {
+  passport.authenticate("local", (error, user, info) => {
+    if (error) {
+      return next(error);
+    }
+    if (!user) {
+      return res.status(401).json({ message: info.message });
+    }
+    req.login(user, (error) => {
+      if (error) {
+        return next(error);
+      }
+      return res
+        .status(200)
+        .json({ message: "Login successfull", id: user._id });
+    });
+  })(req, res, next);
 };

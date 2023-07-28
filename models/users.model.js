@@ -5,7 +5,6 @@ const cardSchema = new mongoose.Schema({
   cardNumber: {
     type: String,
     required: true,
-    unique: true,
   },
   cardHolder: {
     type: String,
@@ -52,11 +51,9 @@ const userSchema = new mongoose.Schema({
   },
   faceBookId: {
     type: String,
-    unique: true,
   },
   googleId: {
     type: String,
-    unique: true,
   },
   profilePicture: {
     type: String,

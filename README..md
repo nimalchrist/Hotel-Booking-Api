@@ -13,6 +13,7 @@ Here are the packages installed for this project:
 - passport
 - passport-local
 - joi
+- express-session
 
 ## Note
 

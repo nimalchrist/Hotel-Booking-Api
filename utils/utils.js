@@ -7,7 +7,6 @@ const key = crypto
   .digest();
 
 
-// Arrow function for encryption
 exports.encrypt = (plaintext) => {
   const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv(algorithm, Buffer.from(key, "utf8"), iv);
@@ -16,7 +15,6 @@ exports.encrypt = (plaintext) => {
   return iv.toString("hex") + ":" + encrypted;
 };
 
-// Arrow function for decryption
 exports.decrypt = (encryptedText) => {
   const [ivHex, encryptedHex] = encryptedText.split(":");
   const iv = Buffer.from(ivHex, "hex");

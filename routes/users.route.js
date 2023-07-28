@@ -6,5 +6,6 @@ usersController = require("../controllers/users.controller");
 usersRoute
   .route("/register")
   .post(usersController.localAuthRegistrationController);
+usersRoute.route("/local/login").post(usersController.loginController);
 
 module.exports = usersRoute;

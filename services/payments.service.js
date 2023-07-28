@@ -1,7 +1,7 @@
 // TODO the services of payments collection
-const Payment = require('../models/payment');
-const User = require('../models/user');
-const Hotel = require('../models/hotel');
+const Payment = require('../models/payments.model');
+const User = require('../models/users.model');
+const Hotel = require('../models/hotels.model');
 
 // Function to add a new payment record
 exports.addPayment = async (req, res) => {

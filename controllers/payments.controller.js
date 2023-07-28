@@ -1,5 +1,5 @@
 // TODO the controllers of payments collection
-const paymentServices=require("../services/paymentServices");
+const paymentServices=require("../services/payments.service");
  const Controller=async(req,res)=>{
   try{
     await paymentServices.addPayment(req,res);

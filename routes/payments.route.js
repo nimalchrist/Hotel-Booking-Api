@@ -4,6 +4,6 @@ const router = express.Router();
 const paymentController = require('../controller/paymentController');
 
 // Route to handle adding a new payment
-router.route("/payment/:userid/:hotelId/add").post( paymentController.Controller);
+router.route("/payment/:userid/:hotelId/add").post( payments.controller.Controller);
 
 module.exports = router;

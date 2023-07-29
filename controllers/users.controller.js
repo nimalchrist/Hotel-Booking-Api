@@ -1,6 +1,6 @@
 // TODO the controllers of users collection
-const passport = require("../authentication/localAuthentication");
-const users = require("../models/users.model");
+const localPassport = require("../authentication/localAuthentication");
+const googlePassport = require("../authentication/googleAuthentication");
 const userServices = require("../services/users.service");
 const utilities = require("../utils/utils");
 const joi = require("joi");
@@ -39,14 +39,14 @@ exports.localAuthRegistrationController = async (req, res) => {
     }
     const userName = `${firstName}_${lastName}`;
     const hashedPassword = utilities.encrypt(password);
-    const emailExist = await userServices.findUserByField("email", email);
+    const emailExist = await userServices.findAcountCredentials("email", email);
 
     if (emailExist) {
       return res
         .status(409)
         .json({ message: "User already exists with the same email id." });
     }
-    const phoneExist = await userServices.findUserByField(
+    const phoneExist = await userServices.findAcountCredentials(
       "phoneNumber",
       phoneNumber
     );
@@ -56,14 +56,14 @@ exports.localAuthRegistrationController = async (req, res) => {
         .json({ message: "User already exists with the same phone number." });
     }
     try {
-      const newUser = new users({
+      const userData = {
         userName,
         email,
         phoneNumber,
-        password: hashedPassword,
-      });
-      await userServices.addUser(newUser);
-      return res.status(201).json({ message: "Registration successfull" });
+        hashedPassword,
+      };
+      await userServices.createUser(userData);
+      return res.status(201).json({ message: "Registration successful" });
     } catch (error) {
       console.log("Error occured: ", error);
       return res.status(500).json({ message: "Internal server error" });
@@ -75,20 +75,54 @@ exports.localAuthRegistrationController = async (req, res) => {
 
 // login controller
 exports.loginController = (req, res, next) => {
-  passport.authenticate("local", (error, user, info) => {
-    if (error) {
-      return next(error);
-    }
-    if (!user) {
-      return res.status(401).json({ message: info.message });
-    }
-    req.login(user, (error) => {
+  const { by } = req.query;
+  if (by === "local") {
+    localPassport.authenticate("local", (error, user, info) => {
       if (error) {
         return next(error);
       }
-      return res
-        .status(200)
-        .json({ message: "Login successfull", id: user._id });
+      if (!user) {
+        return res.status(401).json({ message: info.message });
+      }
+      req.login(user, (error) => {
+        if (error) {
+          return next(error);
+        }
+        return res
+          .status(200)
+          .json({ message: "Login successful", clientId: user.id });
+      });
+    })(req, res, next);
+  } else if (by === "google") {
+    googlePassport.authenticate("google", (error, user, info) => {
+      if (error) {
+        return next(error);
+      }
+      if (!user) {
+        return res.status(401).json({ message: info.message });
+      }
+      req.login(user, (error) => {
+        if (error) {
+          return next(error);
+        }
+        return res
+          .status(200)
+          .json({ message: "login successful", clientId: user.id });
+      });
+    })(req, res, next);
+  } else {
+    return res.status(400).json({ message: "Invalid access" });
+  }
+};
+
+// logout controller
+exports.logout = (req, res) => {
+  if (req.isAuthenticated()) {
+    req.logout(function (error) {
+      if (error) {
+        return next(error);
+      }
+      return res.status(200).json({ message: "Logout successful" });
     });
-  })(req, res, next);
+  }
 };

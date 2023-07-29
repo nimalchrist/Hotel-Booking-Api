@@ -1,7 +1,7 @@
 // TODO the services of users collection
 const usersModel = require("../models/users.model");
 
-exports.findUserByField = async (field, value) => {
+exports.findAcountCredentials = async (field, value) => {
   let query = {};
   query[field] = value;
   try {
@@ -18,6 +18,8 @@ exports.findUserByField = async (field, value) => {
   }
 };
 
-exports.addUser = async (newUser) => {
+exports.createUser = async (userData) => {
+  const newUser = new usersModel(userData);
   await newUser.save();
+  return newUser;
 };

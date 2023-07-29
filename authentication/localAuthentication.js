@@ -11,16 +11,16 @@ passport.use(
     },
     async (email, password, done) => {
       try {
-        const user = await userService.findUserByField("email", email);
+        const user = await userService.findAcountCredentials("email", email);
         if (!user) {
           return done(null, false, {
-            message: "the provided email address is not found",
+            message: "The provided email address is not found",
           });
         }
         if (utilities.decrypt(user.password) == password) {
           return done(null, user);
         } else {
-          return done(null, false, { message: "sorry wrong password" });
+          return done(null, false, { message: "Sorry wrong password" });
         }
       } catch (error) {
         return done(error);
@@ -30,13 +30,12 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-  console.log("Serialized middleware called: ", user);
-  done(null, user);
+  done(null, user.id);
 });
-passport.deserializeUser(async (data, done) => {
+passport.deserializeUser(async (id, done) => {
+
   try {
-    const user = await userService.findUserByField("email", data.email);
-    done(null, user);
+    done(null, id);
   } catch (error) {
     done(error, null);
   }

@@ -9,10 +9,11 @@ const view = async (req, res) => {
     console.log(user_id);
     const hotels = await service.view(user_id); 
     console.log(hotels);
-    if (!hotels || hotels[0].favouriteHotels.length === 0) {
+    if (hotels[0].favouriteHotels.length == 0) {
       res.status(404).json({ msg: "No hotels are added yet" });
-    } else {
-      res.status(200).json(hotels);
+    } 
+    else {
+      res.status(200).json({"list of hotels":hotels[0].favouriteHotels,"Total count ":hotels[0].favouriteHotels.length});
     }
   } catch (error) {
     console.error('Error fetching hotel details:', error);
@@ -31,7 +32,7 @@ const add = async (req, res) => {
       res.status(404).json({ msg: "Error occured " });
       
     } else {
-      res.status(200).json({ msg: "Hotel added successfully" , Favorites : hotels});
+      res.status(200).json({ msg: "Hotel added successfully" , Favorites : hotels.favouriteHotels});
       console.log(service.view(user_id));
     }
   } catch (error) {

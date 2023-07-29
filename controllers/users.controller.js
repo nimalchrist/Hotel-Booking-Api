@@ -1,4 +1,4 @@
-const service = require('../services/user.service')
+const service = require('../services/users.service')
 const connection = require('../services/connection')
 
 // To View list of favourite hotels
@@ -11,17 +11,14 @@ const view = async (req, res) => {
     console.log(hotels);
     if (!hotels || hotels[0].favouriteHotels.length === 0) {
       res.status(404).json({ msg: "No hotels are added yet" });
-    } 
-    else {
+    } else {
       res.status(200).json(hotels);
     }
-  } 
-  catch (error) {
+  } catch (error) {
     console.error('Error fetching hotel details:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
-
 // To add a hotels to avourites hotels
 const add = async (req, res) => {
   try {
@@ -30,11 +27,11 @@ const add = async (req, res) => {
     console.log(user_id,hotel_id);
     const hotels = await service.add(user_id,hotel_id); 
     console.log(hotels);
-    if (hotels==0) {
-      res.status(404).json({ msg: "Hotel not found" });
+    if (!hotels) {
+      res.status(404).json({ msg: "Error occured " });
       
     } else {
-      res.status(200).json({ msg: "Hotel added successfully" });
+      res.status(200).json({ msg: "Hotel added successfully" , Favorites : hotels});
       console.log(service.view(user_id));
     }
   } catch (error) {

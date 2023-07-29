@@ -3,8 +3,11 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.SERVER_PORT;
 
+const mongoose = require("mongoose");
+const hotelsRouter = require("./routes/hotels.route");
+
 //middlewares section
-const mongoUri = "mongodb://localhost:27017/auth_db";
+const mongoUri = "mongodb+srv://gceInterns:IcanioGCE@gcecluster1.hfhvmqk.mongodb.net/golobe_db";
 
 const connectToMongoDB = async () => {
   try {
@@ -20,6 +23,14 @@ const connectToMongoDB = async () => {
 };
 
 connectToMongoDB();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.use(hotelsRouter);
+
+
 //listen section
 app.listen(PORT, (error) => {
   if (error) {

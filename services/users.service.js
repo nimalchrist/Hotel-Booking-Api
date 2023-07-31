@@ -18,6 +18,16 @@ exports.findAcountCredentials = async (field, value) => {
   }
 };
 
+exports.findFacebookAccountCredentials = async (facebookId) => {
+  try {
+    const user = await usersModel.findOne({ faceBookId: facebookId });
+    return user;
+  } catch (error) {
+    console.log("Error occurred while finding user: ", error);
+    throw error;
+  }
+};
+
 exports.createUser = async (userData) => {
   const newUser = new usersModel(userData);
   await newUser.save();

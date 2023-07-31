@@ -15,6 +15,7 @@ Here are the packages installed for this project:
 - joi
 - express-session
 - passport-google-oauth20
+- passport-facebook
 
 ## Note
 

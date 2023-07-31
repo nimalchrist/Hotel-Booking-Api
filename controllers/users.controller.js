@@ -1,21 +1,36 @@
 // TODO the controllers of users collection
 const localPassport = require("../authentication/localAuthentication");
 const googlePassport = require("../authentication/googleAuthentication");
+const facebookPassport = require("../authentication/facebookAuthentication");
 const userServices = require("../services/users.service");
 const utilities = require("../utils/utils");
-const joi = require("joi");
+const Joi = require("joi");
 
-// joi validation for the registration input
-validateSchema = joi.object({
-  firstName: joi.string().required(),
-  lastName: joi.string().required(),
-  email: joi.string().email().required(),
-  phoneNumber: joi
-    .string()
+const validateSchema = Joi.object({
+  firstName: Joi.string().required().messages({
+    "string.empty": "First name is required",
+  }),
+  lastName: Joi.string().required().messages({
+    "string.empty": "Last name is required",
+  }),
+  email: Joi.string().email().required().messages({
+    "string.email": "Invalid email format",
+    "string.empty": "Email is required",
+  }),
+  phoneNumber: Joi.string()
     .pattern(/^\d{10}$/)
-    .required(),
-  password: joi.string().required(),
-  confirmPassword: joi.ref("password"),
+    .required()
+    .messages({
+      "string.pattern.base": "Phone number must be 10 digits",
+      "string.empty": "Phone number is required",
+    }),
+  password: Joi.string().required().messages({
+    "string.empty": "Password is required",
+  }),
+  confirmPassword: Joi.string().valid(Joi.ref("password")).required().messages({
+    "any.only": "Passwords do not match",
+    "string.empty": "Confirm password is required",
+  }),
 });
 
 // local register controller
@@ -29,15 +44,15 @@ exports.localAuthRegistrationController = async (req, res) => {
       password,
       confirmPassword,
     } = req.body;
-    console.log(req.body);
     const { error } = validateSchema.validate(req.body);
     if (error) {
-      return res.status(400).json({ message: error.details[0].message });
+      const errorMessage = error.details[0].message.replace(/"/g, "");
+      return res.status(400).json({ message: errorMessage });
     }
     if (password !== confirmPassword) {
       return res.status(400).json({ message: "Passwords do not match" });
     }
-    const userName = `${firstName}_${lastName}`;
+    const userName = `${firstName} ${lastName}`;
     const hashedPassword = utilities.encrypt(password);
     const emailExist = await userServices.findAcountCredentials("email", email);
 
@@ -60,7 +75,7 @@ exports.localAuthRegistrationController = async (req, res) => {
         userName,
         email,
         phoneNumber,
-        hashedPassword,
+        password: hashedPassword,
       };
       await userServices.createUser(userData);
       return res.status(201).json({ message: "Registration successful" });
@@ -110,13 +125,30 @@ exports.loginController = (req, res, next) => {
           .json({ message: "login successful", clientId: user.id });
       });
     })(req, res, next);
+  } else if (by === "facebook") {
+    facebookPassport.authenticate("facebook", (error, user, info) => {
+      if (error) {
+        return next(error);
+      }
+      if (!user) {
+        return res.status(401).json({ message: info.message });
+      }
+      req.logIn(user, (error) => {
+        if (error) {
+          return next(error);
+        }
+        return res
+          .status(200)
+          .json({ message: "login successful", clientId: user.id });
+      });
+    })(req, res, next);
   } else {
     return res.status(400).json({ message: "Invalid access" });
   }
 };
 
 // logout controller
-exports.logout = (req, res) => {
+exports.logoutController = (req, res) => {
   if (req.isAuthenticated()) {
     req.logout(function (error) {
       if (error) {
@@ -124,5 +156,7 @@ exports.logout = (req, res) => {
       }
       return res.status(200).json({ message: "Logout successful" });
     });
+  }else{
+    return res.status(400).json({message: "Sorry, Bad request"})
   }
 };

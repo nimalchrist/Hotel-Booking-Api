@@ -30,11 +30,12 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
+  console.log("local serialisation");
   done(null, user.id);
 });
 passport.deserializeUser(async (id, done) => {
-
   try {
+    console.log("local deserialisation");
     done(null, id);
   } catch (error) {
     done(error, null);

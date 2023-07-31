@@ -6,6 +6,10 @@ usersController = require("../controllers/users.controller");
 usersRoute
   .route("/register")
   .post(usersController.localAuthRegistrationController);
-usersRoute.route("/login").post(usersController.loginController);
+usersRoute
+  .route("/login")
+  .post(usersController.loginController)
+  .get(usersController.loginController);
+usersRoute.route("/logout").get(usersController.logoutController);
 
 module.exports = usersRoute;

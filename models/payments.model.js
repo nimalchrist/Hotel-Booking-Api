@@ -1,4 +1,5 @@
 // TODO the definition of payments model
+const mongoose = require('mongoose');
 const paymentSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,

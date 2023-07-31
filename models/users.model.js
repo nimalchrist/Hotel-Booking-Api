@@ -1,11 +1,11 @@
-// TODO the definition of users model
 const mongoose = require("mongoose");
 
 const cardSchema = new mongoose.Schema({
   cardNumber: {
     type: String,
-    required: true,
     unique: true,
+    sparse: true,
+    required: true,
   },
   cardHolder: {
     type: String,
@@ -19,6 +19,11 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  cardName: {
+    type: String,
+    enum: ["MasterCard", "Visa", "American Express", "Unknown"],
+    default: "Unknown",
+  },
 });
 
 const userSchema = new mongoose.Schema({
@@ -28,12 +33,13 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
     unique: true,
+    sparse: true,
   },
   phoneNumber: {
     type: String,
     unique: true,
+    sparse: true,
   },
   password: {
     type: String,
@@ -53,10 +59,12 @@ const userSchema = new mongoose.Schema({
   faceBookId: {
     type: String,
     unique: true,
+    sparse: true,
   },
   googleId: {
     type: String,
     unique: true,
+    sparse: true,
   },
   profilePicture: {
     type: String,

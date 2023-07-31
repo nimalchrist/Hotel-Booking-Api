@@ -30,15 +30,15 @@ const hotelSchema = mongoose.Schema({
   },
   rating: {
     type: Number,
-    default: 0,
+    default: 0, // Default value set to 0
   },
   overallReview: {
     type: String,
-    default: 'Not Reviewed',
+    default: 'Not Reviewed', // Default value is 'Not Reviewed'
   },
   numReviews: {
     type: Number,
-    default: 0,
+    default: 0, // Default value set to 0
   },
   ratePerNight: {
     type: Number,
@@ -46,7 +46,7 @@ const hotelSchema = mongoose.Schema({
   },
   overview: {
     type: String,
-    required: true,
+    required: true, // Changed to required
   },
   locationFeatures: [String],
   rooms: [
@@ -74,7 +74,7 @@ const hotelSchema = mongoose.Schema({
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'users',
+        ref: 'User',
         required: true,
       },
       comment: {
@@ -88,10 +88,10 @@ const hotelSchema = mongoose.Schema({
     },
   ],
   images: [String],
-  totalRooms: {
+  totalRooms: { // New field to store the total number of rooms in the hotel
     type: Number,
     default: 0,
-  },
+  }
 });
 
 // Calculate the average guestRating for the hotel
@@ -100,23 +100,38 @@ hotelSchema.methods.calculateAverageRating = function () {
   const averageRating = totalRatings / this.guestReviews.length;
   this.rating = averageRating;
 
-  // Set the overallReview based on the rating
-  if (averageRating >= 0 && averageRating < 1) {
-    this.overallReview = 'Not Preferable';
-  } else if (averageRating >= 1 && averageRating < 2) {
-    this.overallReview = 'Poor';
-  } else if (averageRating >= 2 && averageRating < 3) {
-    this.overallReview = 'Fair';
-  } else if (averageRating >= 3 && averageRating < 4) {
-    this.overallReview = 'Good';
-  } else if (averageRating >= 4 && averageRating <= 5) {
-    this.overallReview = 'Very Good';
+    // Set the overallReview based on the rating
+    if (averageRating >= 0 && averageRating < 1) {
+      this.overallReview = 'Not Preferable';
+    } else if (averageRating >= 1 && averageRating < 2) {
+      this.overallReview = 'Poor';
+    } else if (averageRating >= 2 && averageRating < 3) {
+      this.overallReview = 'Fair';
+    } else if (averageRating >= 3 && averageRating < 4) {
+      this.overallReview = 'Good';
+    } else if (averageRating >= 4 && averageRating <= 5) {
+      this.overallReview = 'Very Good';
+    }
+};
+
+hotelSchema.methods.updateRoomCountAfterBooking = function (roomType, numberOfRoomsBooked) {
+  // Find the room in the hotel with the specified roomType
+  const room = this.rooms.find((room) => room.roomType === roomType);
+
+  // If the room is found, update the roomCount
+  if (room) {
+    room.roomCount -= numberOfRoomsBooked;
   }
+
+  // Recalculate the totalRooms and save the changes
+  this.calculateTotalRooms();
 };
 
 hotelSchema.methods.calculateTotalRooms = function () {
   this.totalRooms = this.rooms.reduce((total, room) => total + room.roomCount, 0);
 };
+
+
 
 const Hotel = mongoose.model('Hotel', hotelSchema);
 module.exports = Hotel;

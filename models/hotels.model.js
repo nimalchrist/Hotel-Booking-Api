@@ -1,5 +1,4 @@
-// TODO the definition of hotels model
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const hotelSchema = mongoose.Schema({
   hotelName: {
@@ -7,7 +6,7 @@ const hotelSchema = mongoose.Schema({
     required: true,
   },
   hotelType: {
-    type: String,
+    type: Number,
     required: true,
   },
   location: {
@@ -30,30 +29,25 @@ const hotelSchema = mongoose.Schema({
   },
   rating: {
     type: Number,
-    required: true,
+    default: 0,
   },
-  normalReview: {
+  overallReview: {
     type: String,
-    required: true,
+    default: 'Not Reviewed',
   },
   numReviews: {
     type: Number,
-    required: true,
+    default: 0,
   },
   ratePerNight: {
     type: Number,
     required: true,
   },
-  imageUrl: {
+  overview: {
     type: String,
     required: true,
   },
-  description: {
-    type: String,
-  },
-  locationFeatures: {
-    type: String,
-  },
+  locationFeatures: [String],
   rooms: [
     {
       roomType: {
@@ -68,6 +62,10 @@ const hotelSchema = mongoose.Schema({
         type: Number,
         required: true,
       },
+      roomCount: {
+        type: Number,
+        required: true,
+      },
     },
   ],
   amenities: [String],
@@ -75,17 +73,49 @@ const hotelSchema = mongoose.Schema({
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
+        ref: 'users',
         required: true,
       },
-      review: {
+      comment: {
         type: String,
+        required: true,
+      },
+      guestRating: {
+        type: Number,
         required: true,
       },
     },
   ],
-  interiorImages: [String],
+  images: [String],
+  totalRooms: {
+    type: Number,
+    default: 0,
+  },
 });
 
-const hotels = mongoose.model("hotels", hotelSchema);
-module.exports = hotels;
+// Calculate the average guestRating for the hotel
+hotelSchema.methods.calculateAverageRating = function () {
+  const totalRatings = this.guestReviews.reduce((total, review) => total + review.guestRating, 0);
+  const averageRating = totalRatings / this.guestReviews.length;
+  this.rating = averageRating;
+
+  // Set the overallReview based on the rating
+  if (averageRating >= 0 && averageRating < 1) {
+    this.overallReview = 'Not Preferable';
+  } else if (averageRating >= 1 && averageRating < 2) {
+    this.overallReview = 'Poor';
+  } else if (averageRating >= 2 && averageRating < 3) {
+    this.overallReview = 'Fair';
+  } else if (averageRating >= 3 && averageRating < 4) {
+    this.overallReview = 'Good';
+  } else if (averageRating >= 4 && averageRating <= 5) {
+    this.overallReview = 'Very Good';
+  }
+};
+
+hotelSchema.methods.calculateTotalRooms = function () {
+  this.totalRooms = this.rooms.reduce((total, room) => total + room.roomCount, 0);
+};
+
+const Hotel = mongoose.model('Hotel', hotelSchema);
+module.exports = Hotel;

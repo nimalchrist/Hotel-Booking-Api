@@ -1,29 +1,48 @@
+const services = require('../services/services');
+const Hotel = require('../models/hotel');
 const Booking = require('../models/booking');
-const users = require('../models/user');
-const hotel = require('../models/hotel');
-const payments = require('../models/payment');
-
 
 exports.createBooking = async (req, res) => {
   try {
     // Extract the data from the request body
     const { userId, hotelId, paymentId, reservation } = req.body;
 
-    const user = await users.findById(userId);
-    const hotels = await hotel.findById(hotelId);
-    const payment = await payments.findById(paymentId);
-
-    if (!user || !hotels || !payment) {
-      return res.status(404).json({ message: 'User, hotel, or payment not found.' });
+    // Find the hotel to update the room count and total rooms
+    const hotel = await Hotel.findById(hotelId);
+    if (!hotel) {
+      return res.status(404).json({ error: 'Hotel not found' });
     }
 
-    // Create a new booking 
-    const newBooking = await Booking.create({
-      user: user._id, 
-      hotel: hotels._id, 
-      payment: payment._id,
+    // Find the room in the hotel with the specified roomType and roomId
+    const room = hotel.rooms.find(
+      (room) => room._id.toString() === reservation.roomId && room.roomType === reservation.roomType
+    );
+    if (!room) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+
+    // Check if there are enough available rooms
+    if (room.roomCount < reservation.numberOfRooms) {
+      return res.status(400).json({ error: 'Not enough available rooms for booking' });
+    }
+
+    // Update the room count and total rooms
+    room.roomCount -= reservation.numberOfRooms;
+    hotel.calculateTotalRooms();
+
+    // Save the updated hotel
+    await hotel.save();
+
+    // Create the new booking
+    const newBooking = new Booking({
+      hotelId,
+      userId,
+      paymentId,
       reservation,
     });
+
+    // Save the booking to the database
+    await newBooking.save();
 
     res.status(201).json({ msg: 'Booking created successfully', booking: newBooking });
   } catch (error) {
@@ -32,11 +51,14 @@ exports.createBooking = async (req, res) => {
   }
 };
 
+
 exports.getHotelBookings = async (req, res) => {
   const { hotelId } = req.params;
 
   try {
-    const bookings = await Booking.find({ hotelId });
+    // Call the getHotelBookings function from services.js
+    const bookings = await services.getHotelBookings(hotelId);
+
     res.json(bookings);
   } catch (error) {
     console.error(error);

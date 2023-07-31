@@ -15,7 +15,6 @@ exports.createBooking = async (req, res) => {
 
     // Find the room in the hotel with the specified roomType and roomId
     const room = Hotel.find({"room._id": reservation.roomId,"room.roomType":reservation.roomType});
-    console.log(room);
     if (!room) {
       return res.status(404).json({ error: 'Room not found' });
     }
@@ -28,7 +27,7 @@ exports.createBooking = async (req, res) => {
     // Update the room count and total rooms
     
     hotel.updateRoomCountAfterBooking(reservation.roomType,reservation.numberOfRooms);
-    
+
     // Save the updated hotel
     await hotel.save();
 

@@ -18,7 +18,7 @@ exports.addPayment = async (req, res) => {
     }
 
     // Assuming 'cards' is an array of card objects in the user document
-    const cardsArray = user.cards;
+    const cardsArray = user.addedCards;
 
     if (!cardsArray || cardsArray.length === 0) {
       console.log("no card details found");

@@ -1,63 +1,51 @@
 // TODO the controllers of hotels collection
-const Hotel = require("./model");
+const Hotel = require("./../models/hotels.model");
+const {
+  findHotelByIdQuery,
+  deleteHotelByIdQuery,
+  findAllHotelsQuery,
+  searchHotelsQuery,
+  filterHotelsQuery
+} = require("../services/hotels.service");
 
 
 async function handleSearchRequest(req, res) {
-    try {
-      const searchTerm = req.query.q;
-      const checkInDate = req.query.checkIn;
-      const checkOutDate = req.query.checkOut;
-      const numberOfRooms = parseInt(req.query.rooms);
-      //const numberOfGuests = parseInt(req.query.guests);
-  
-      if (!searchTerm) {
-        return res.status(400).json({ error: "Search term is missing." });
-      }
-  
-      // Parse the search query to identify different search criteria (hotel name, location, city)
-      const searchCriteria = searchTerm.split(" ");
-      console.log(searchCriteria);
-      // Construct the Atlas Search query to search indexed fields for the search criteria
-      const searchResults = await Hotel.aggregate([
-        {
-          $search: {
-            //index: "default",
-            text: {
-              query: searchCriteria.join(" "), // Join the search terms with space to form the query
-              path: ["hotelName", "location.cityName", "location.address"], // Fields to search in
-            },
-          },
-        },
-        // Optional: Add more aggregation stages if needed for filtering, sorting, etc.
-      ]).exec();
-      console.log(searchResults);
-      // Check if there are hotels with available rooms
-      const hasAvailableRooms = searchResults.some(hotel => {
-        return hotel.totalRooms >= numberOfRooms;
-      });
-      console.log(hasAvailableRooms);
-      if (hasAvailableRooms) {
-        // Filter search results based on available rooms
-        const filteredResults = searchResults.filter(hotel => {
-          return hotel.rooms.some(room => {
-            return room.availability >= numberOfRooms;
-          });
-        });
-        console.log(filteredResults)
-        // Return the filtered search results as a JSON response
-        res.json(filteredResults);
+  try {
+    const searchTerm = req.query.q;
+    const numberOfRooms = parseInt(req.query.rooms);
+    const minPrice = parseFloat(req.query.minPrice);
+    const maxPrice = parseFloat(req.query.maxPrice);
+    const selectedRating = parseInt(req.query.rating);
+    const selectedAmenities = req.query.amenities ? req.query.amenities.split(',') : [];
+
+    if (!searchTerm) {
+      return res.status(400).json({ error: 'Search term is missing.' });
     }
-  else{
-    res.json("no hotels fount");
-    console.log("no hotels found");
-  }}
-     catch (error) {
-      console.error("Error in handleSearchRequest:", error);
-      res
-        .status(500)
-        .json({ error: "An error occurred while processing the search." });
+
+    // Call the searchHotels service function to get search results
+    const searchResults = await searchHotelsQuery(searchTerm);
+
+    // Call the filterHotels service function to apply filtering options
+    const filteredResults = filterHotelsQuery(
+      searchResults,
+      numberOfRooms,
+      minPrice,
+      maxPrice,
+      selectedRating,
+      selectedAmenities
+    );
+
+    if (filteredResults.length > 0) {
+      // Return the filtered search results as a JSON response
+      res.json(filteredResults);
+    } else {
+      res.json('No hotels found with available rooms.');
     }
+  } catch (error) {
+    console.error('Error in handleSearchRequest:', error);
+    res.status(500).json({ error: 'An error occurred while processing the search.' });
   }
+}
 
 
 async function deleteHotelById(req, res) {

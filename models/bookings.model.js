@@ -20,15 +20,7 @@ const bookingSchema = new mongoose.Schema({
     ref: 'Payments',
     required:true,
   },
-
-  roomId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Hotel.rooms',
-    required: true,
-  },
-
-  
-    reservation: {
+ reservation: {
 
     checkInDate: {
       type: Date,
@@ -42,6 +34,11 @@ const bookingSchema = new mongoose.Schema({
 
     roomType: {
       type: String,
+      required: true,
+    },
+    roomId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Hotel.rooms',
       required: true,
     },
 

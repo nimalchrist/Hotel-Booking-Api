@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const authRoutes = require("./routes/users.route");
 const session = require("express-session");
 const passport = require("passport");
+const cors = require("cors");
 const app = express();
 const PORT = process.env.SERVER_PORT;
 const DB_URI = process.env.DATABASE_URI;
@@ -23,6 +24,7 @@ async function connectToDatabase() {
 connectToDatabase();
 
 //middlewares section
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use((err, req, res, next) => {

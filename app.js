@@ -2,12 +2,17 @@ const express = require("express");
 const mongoose = require("mongoose");
 const routes = require('./routes/routes');
 
+//middleware sections
 const app = express();
 app.use(express.json());
+
+//routes
 app.use("/",routes);
+
 
 mongoose.set("debug", true);
 
+//Database connection
 const connectToDatabase = async () => {
   try {
     await mongoose.connect("mongodb://127.0.0.1:27017/booking_hotel", {

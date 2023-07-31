@@ -2,7 +2,7 @@ const users = require('../models/users.model');
 
 //Displaying favourites
 exports.view = async (user_id)=>{
-    return await users.find({_id: user_id},{favouriteHotels:1,_id:0});
+    return await users.find({_id: user_id},{favouriteHotels:1,_id:0}).populate('favouriteHotels');
     
 }
 

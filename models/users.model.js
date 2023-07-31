@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const Hotel = require('./hotels.model')
 const cardSchema = new mongoose.Schema({
   cardNumber: {
     type: String,
@@ -75,14 +75,14 @@ const userSchema = new mongoose.Schema({
   favouriteHotels: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "hotels",
+      ref: "Hotel",
     },
   ],
   addedCards: [cardSchema],
   recentVisitsOfHotels: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "hotels",
+      ref: "Hotel",
     },
   ],
   registeredAt: {

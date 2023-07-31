@@ -5,6 +5,7 @@ const cardSchema = new mongoose.Schema({
   cardNumber: {
     type: String,
     required: true,
+    sparse: true,
     unique: true,
     set: utils.encrypt, // Encrypt the card number before saving
     get: utils.decrypt, // Decrypt the card number when accessed
@@ -37,12 +38,13 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
     unique: true,
+    sparse: true,
   },
   phoneNumber: {
     type: String,
     unique: true,
+    sparse: true,
   },
   password: {
     type: String,
@@ -62,10 +64,12 @@ const userSchema = new mongoose.Schema({
   faceBookId: {
     type: String,
     unique: true,
+    sparse: true,
   },
   googleId: {
     type: String,
     unique: true,
+    sparse: true,
   },
   profilePicture: {
     type: String,
@@ -97,3 +101,4 @@ const userSchema = new mongoose.Schema({
 
 const users = mongoose.model("users", userSchema);
 module.exports = users;
+

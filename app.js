@@ -12,7 +12,7 @@ app.use(express.json());
 // Set up payment routes
 app.use('/', Routes);
 //db connection 
-const mongodbUri = 'mongodb+srv://gceInterns:IcanioGCE@gcecluster1.hfhvmqk.mongodb.net/globe_db';
+const mongodbUri = 'mongodb+srv://gceInterns:IcanioGCE@gcecluster1.hfhvmqk.mongodb.net/golobe_db';
 
 mongoose.connect(mongodbUri, {
   useNewUrlParser: true,

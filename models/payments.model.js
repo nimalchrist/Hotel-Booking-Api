@@ -12,17 +12,9 @@ const paymentSchema = new mongoose.Schema({
   paymentStatus: {
     type: String,
     enum: ["paid", "unpaid"],
-    default: "unpaid",
-    required: true,
+    default: "unpaid"
   },
 });
 
 const payments = mongoose.model("payments", paymentSchema);
-const pay1=new paymentSchema({
-  "userId":"138174863484",
-  "hotelId":"123",
-  "paymentStatus":"unpaid"
-})
-const result=pay1.save();
-console.timeLog("payment saved :",result);
 module.exports = payments;

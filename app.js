@@ -1,28 +1,34 @@
 const express = require("express");
 require("dotenv").config();
-const app = express();
-const PORT = process.env.SERVER_PORT;
 const mongoose = require("mongoose");
 const hotelRoutes = require("./routes/hotels.route");
-//middlewares section
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use("/app", hotelRoutes);
-const uri =
-  "mongodb+srv://fencyj854:fencyj854@hotel.idlmgx6.mongodb.net/?retryWrites=true&w=majority";
+const app = express();
+const PORT = process.env.SERVER_PORT;
+const DB_URI = process.env.DATABASE_URI;
+
+//db connection
 async function connectToDatabase() {
   try {
-    // Connect to the MongoDB Atlas cluster using Mongoose
-    await mongoose.connect(uri, {
+    await mongoose.connect(DB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log("connected");
+    console.log("Db connected Successfully");
   } catch (error) {
-    console.error("Error connecting to MongoDB:", error);
+    console.log("Error occurred: ", error);
   }
 }
 connectToDatabase();
+
+//middlewares section
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use((err, req, res, next) => {
+  console.error("Error occurred: ", err);
+  res.status(500).json({ message: "Internal server error" });
+});
+app.use("/hotel", hotelRoutes);
+
 //listen section
 app.listen(PORT, (error) => {
   if (error) {

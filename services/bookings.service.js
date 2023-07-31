@@ -16,5 +16,6 @@ const createBooking = async (bookingData) => {
 const getHotelBookings = async (hotelId) => {
 
     const bookings = await Booking.find({ hotelId });
+    
     return bookings;
   }

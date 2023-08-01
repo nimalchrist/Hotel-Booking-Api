@@ -26,7 +26,7 @@ const cardSchema = new mongoose.Schema({
   },
   cardName: {
     type: String,
-    enum: ['MasterCard', 'Visa', 'American Express', 'Unknown'],
+    enum: ['MasterCard', 'Visa', 'American Express', 'Discover','Unknown'],
     default: 'Unknown',
   },
 });

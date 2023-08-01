@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const app = express();
-const PORT = process.env.SERVER_PORT  // Use the specified port in the .env file or 3000 as the default
+const PORT = process.env.SERVER_PORT  // Use the specified port in the .env files
 
 // Import routes
 const usersRoute = require('./routes/users.route');

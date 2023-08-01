@@ -114,15 +114,15 @@ exports.loginController = (req, res, next) => {
         return next(error);
       }
       if (!user) {
-        return res.status(401).json({ message: info.message });
+        return res.redirect(process.env.CLIENT_URL + "/login");
       }
       req.login(user, (error) => {
         if (error) {
           return next(error);
         }
-        return res
-          .status(200)
-          .json({ message: "login successful", clientId: user.id });
+        return res.redirect(
+          process.env.CLIENT_URL + "/home?clientId=" + user.id
+        );
       });
     })(req, res, next);
   } else if (by === "facebook") {
@@ -131,15 +131,15 @@ exports.loginController = (req, res, next) => {
         return next(error);
       }
       if (!user) {
-        return res.status(401).json({ message: info.message });
+        return res.redirect(process.env.CLIENT_URL + "/login");
       }
-      req.logIn(user, (error) => {
+      req.login(user, (error) => {
         if (error) {
           return next(error);
         }
-        return res
-          .status(200)
-          .json({ message: "login successful", clientId: user.id });
+        return res.redirect(
+          process.env.CLIENT_URL + "/home?clientId=" + user.id
+        );
       });
     })(req, res, next);
   } else {
@@ -156,7 +156,7 @@ exports.logoutController = (req, res) => {
       }
       return res.status(200).json({ message: "Logout successful" });
     });
-  }else{
-    return res.status(400).json({message: "Sorry, Bad request"})
+  } else {
+    return res.status(400).json({ message: "Sorry, Bad request" });
   }
 };

@@ -24,7 +24,13 @@ async function connectToDatabase() {
 connectToDatabase();
 
 //middlewares section
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    methods: "GET, POST, PUT, DELETE",
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use((err, req, res, next) => {
@@ -33,6 +39,7 @@ app.use((err, req, res, next) => {
 });
 app.use(
   session({
+    name: "golobe",
     secret: process.env.ENCRYPTION_KEY,
     resave: false,
     saveUninitialized: false,

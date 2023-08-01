@@ -1,9 +1,7 @@
 const Joi = require('joi');
 const User = require('../models/users.model');
-
 const encryptionUtil = require('../utils/utils');
 const { decrypt } = require('../utils/utils');
-
 
 // Fetch user details by ID along with decrypted card details
 exports.getUserDetails = async (req, res) => {
@@ -18,22 +16,28 @@ exports.getUserDetails = async (req, res) => {
       return res.status(404).json({ message: 'User not found.' });
     }
 
-   // Decrypt the card details in the addedCards field
-   if (user.addedCards.length > 0) {
-    user.addedCards = user.addedCards.map((card) => ({
-      ...card.toObject(),
-      cardNumber: decrypt(card.cardNumber),
-      cvv: decrypt(card.cvv),
-    }));
-  } else {
-    return res.json({ message: 'No saved cards.' });
-  }
+    // Check if the user has saved cards
+    if (user.addedCards.length > 0) {
+      // Decrypt the card details in the addedCards field
+      const decryptedCards = user.addedCards.map((addedCard) => ({
+        cardHolder: addedCard.cardHolder,
+        cardNumber: decrypt(addedCard.cardNumber),
+        expirationDate: addedCard.expirationDate,
+        cvv: decrypt(addedCard.cvv),
+        cardName: addedCard.cardName,
+      }));
 
-  res.json(user);
-} catch (err) {
-  res.status(500).json({ error: err.message });
-}
+      // Return only the decrypted card details in the response
+      return res.json(decryptedCards);
+    } else {
+      // If the user has no saved cards, return a message
+      return res.json({ message: 'No saved cards.' });
+    }
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
 };
+
 
 // Joi schema for card details validation
 const cardSchema = Joi.object({
@@ -64,6 +68,7 @@ exports.addNewCard = async (req, res) => {
   const encryptedCvv = encryptionUtil.encrypt(cvv);
   const encryptedCardNumber = encryptionUtil.encrypt(cardNumber);
   
+
   // Determine the card name based on the first digit of the card number
   let cardName;
   switch (cardNumber.charAt(0)) {
@@ -93,6 +98,7 @@ exports.addNewCard = async (req, res) => {
   };
 
   try {
+
     // Find the existing user by user ID
     const existingUser = await User.findOne({ _id: userId });
     console.log(existingUser);
@@ -110,3 +116,4 @@ exports.addNewCard = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+  

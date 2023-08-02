@@ -87,5 +87,5 @@ const hotelSchema = mongoose.Schema({
   interiorImages: [String],
 });
 
-const hotels = mongoose.model("hotels", hotelSchema);
-module.exports = hotels;
+const Hotel = mongoose.model("Hotel", hotelSchema);
+module.exports = Hotel;

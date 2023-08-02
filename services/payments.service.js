@@ -5,16 +5,21 @@ const Hotel = require('../models/hotels.model');
 
 // Function to add a new payment record
 exports.addPayment = async (req, res) => {
-  const { userId, hotelId } = req.body;
-  console.log("request body:", req.body);
+  const userId =req.params.userId;
+  const hotelId=req.params.hotelId;
+
 
   try {
     // Find the user and hotel documents from their respective collections
     const user = await User.findById(userId);
+   
+    if ( !user) {
+      return res.status(404).json({ error: ' user not found.' });
+    }
+    
     const hotel = await Hotel.findById(hotelId);
-
-    if (!user || !hotel) {
-      return res.status(404).json({ error: 'User or Hotel not found.' });
+    if ( !hotel) {
+      return res.status(404).json({ error: ' Hotel not found.' });
     }
 
     // Assuming 'cards' is an array of card objects in the user document

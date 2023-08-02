@@ -2,7 +2,7 @@ const Joi = require('joi');
 const userService = require('../services/users.service');
 
 // Fetch all users
-exports.getAllUsers = async (req, res) => {
+exports.getAllUsers = async (_req, res) => {
   try {
     const result = await userService.getAllUsers();
     if (result.error) {
@@ -30,7 +30,7 @@ exports.getUserDetails = async (req, res) => {
   }
 };
 // Fetch all users along with decrypted card details
-exports.getAllUsersWithDecryptedCards = async (req, res) => {
+exports.getAllUsersWithDecryptedCards = async (_req, res) => {
   try {
     const result = await userService.getAllUsersWithDecryptedCards();
     if (result.error) {

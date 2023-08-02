@@ -1,4 +1,3 @@
-// TODO all the routes corresponding to the hotels controller
 const express = require('express');
 const router = express.Router();
 const controllers = require('../controllers/hotels.controller');

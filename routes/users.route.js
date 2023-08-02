@@ -1,13 +1,22 @@
 // TODO all the routes corresponding to the users controller
 const express = require("express");
-const route = express.Router();
-const controller = require("../controllers/users.controller");
+usersRoute = express.Router();
+usersController = require("../controllers/users.controller");
 
-route.route("/users/:user_id/favorites").get(controller.view);
+usersRoute
+  .route("/register")
+  .post(usersController.localAuthRegistrationController);
+usersRoute
+  .route("/login")
+  .post(usersController.loginController)
+  .get(usersController.loginController);
+usersRoute.route("/logout").get(usersController.logoutController);
 
-route.route("/users/:user_id/favorites/:hotel_id").post(controller.add);
+usersRoute.route("/users/favorites").get(usersController.view);
 
-route.route("/users/:user_id/favorites/:hotel_id").delete(controller.remove);
+usersRoute.route("/users/favorites/:hotel_id").post(usersController.add);
 
-route.route("/users/:user_id/recent/:hotel_id").put(controller.recent);
-module.exports = route;
+usersRoute.route("/users/favorites/:hotel_id").delete(usersController.remove);
+
+usersRoute.route("/users/recent/:hotel_id").put(usersController.recent);
+module.exports = usersRoute;

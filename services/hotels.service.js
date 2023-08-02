@@ -1,10 +1,7 @@
-// TODO the services of hotels collection
 const Hotel = require("../models/hotels.model");
-const mongoose = require('mongoose');
-const connection = require('../services/connection')
+
 exports.getAllHotels = async () => {
   try {
-    connection();
     const hotels = await Hotel.find();
     return hotels;
   } catch (error) {
@@ -14,7 +11,6 @@ exports.getAllHotels = async () => {
 
 exports.createHotel = async (hotelData) => {
   try {
-    connection();
     const newHotel = new Hotel(hotelData);
     await newHotel.save();
     return newHotel;
@@ -85,7 +81,6 @@ exports.deleteReview = async (hotelId, reviewId) => {
 
 exports.insertRoom = async (hotelId, roomData) => {
   try {
-    connection();
     const hotel = await Hotel.findById(hotelId);
     if (!hotel) {
       throw new Error('Hotel not found');
@@ -95,6 +90,6 @@ exports.insertRoom = async (hotelId, roomData) => {
     await hotel.save();
     return hotel;
   } catch (error) {
-    throw new Error('Error Occured ');
+    throw new Error('Error inserting room');
   }
 };

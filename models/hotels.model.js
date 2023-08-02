@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const hotelSchema = mongoose.Schema({
   hotelName: {
@@ -33,7 +33,7 @@ const hotelSchema = mongoose.Schema({
   },
   overallReview: {
     type: String,
-    default: 'Not Reviewed',
+    default: "Not Reviewed",
   },
   numReviews: {
     type: Number,
@@ -95,27 +95,33 @@ const hotelSchema = mongoose.Schema({
 
 // Calculate the average guestRating for the hotel
 hotelSchema.methods.calculateAverageRating = function () {
-  const totalRatings = this.guestReviews.reduce((total, review) => total + review.guestRating, 0);
+  const totalRatings = this.guestReviews.reduce(
+    (total, review) => total + review.guestRating,
+    0
+  );
   const averageRating = totalRatings / this.guestReviews.length;
   this.rating = averageRating;
 
   // Set the overallReview based on the rating
   if (averageRating >= 0 && averageRating < 1) {
-    this.overallReview = 'Not Preferable';
+    this.overallReview = "Not Preferable";
   } else if (averageRating >= 1 && averageRating < 2) {
-    this.overallReview = 'Poor';
+    this.overallReview = "Poor";
   } else if (averageRating >= 2 && averageRating < 3) {
-    this.overallReview = 'Fair';
+    this.overallReview = "Fair";
   } else if (averageRating >= 3 && averageRating < 4) {
-    this.overallReview = 'Good';
+    this.overallReview = "Good";
   } else if (averageRating >= 4 && averageRating <= 5) {
-    this.overallReview = 'Very Good';
+    this.overallReview = "Very Good";
   }
 };
 
 hotelSchema.methods.calculateTotalRooms = function () {
-  this.totalRooms = this.rooms.reduce((total, room) => total + room.roomCount, 0);
+  this.totalRooms = this.rooms.reduce(
+    (total, room) => total + room.roomCount,
+    0
+  );
 };
 
-const Hotel = mongoose.model('Hotel', hotelSchema);
+const Hotel = mongoose.model("Hotel", hotelSchema);
 module.exports = Hotel;

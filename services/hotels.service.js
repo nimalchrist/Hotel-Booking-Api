@@ -1,5 +1,4 @@
 const Hotel = require("../models/hotels.model");
-const mongoose = require('mongoose');
 
 exports.getAllHotels = async () => {
   try {

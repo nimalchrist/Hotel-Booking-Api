@@ -28,7 +28,8 @@ db.once('open', () => {
 });
 
 // Use the usersRoute for handling user-related endpoints
-app.use("/user", usersRoute);
+
+app.use('/users', usersRoute);
 
 //listen section
 app.listen(PORT, (error) => {

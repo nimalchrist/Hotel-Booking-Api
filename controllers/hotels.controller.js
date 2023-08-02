@@ -161,3 +161,18 @@ exports.insertRoom = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+exports.getGuestReviews = async (req, res) => {
+  try {
+    const hotelId = req.params.hotelId;
+    const hotel = await hotelService.getGuestReviews(hotelId);
+    if (!hotel) {
+      return res.status(404).json({ error: 'Hotel not found' });
+    }
+    res.status(200).json(hotel.guestReviews);
+  } catch (error) {
+    console.error('Error fetching guest reviews:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+

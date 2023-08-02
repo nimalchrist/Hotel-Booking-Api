@@ -1,1 +1,1 @@
-// TODO the controllers of bookings collection
+// TODO the controllers of bookings 

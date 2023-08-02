@@ -18,19 +18,18 @@ exports.findAllHotelsQuery = async () => {
 // Function to search hotels based on search criteria
 exports.searchHotelsQuery = async (searchTerm) => {
   try {
-    // Construct the Atlas Search query to search indexed fields for the search criteria
-    const searchCriteria = searchTerm.split(' ');
     const searchResults = await Hotel.aggregate([
       {
         $search: {
+          index: 'default', 
           text: {
-            query: searchCriteria.join(' '),
-            path: ['hotelName', 'location.cityName', 'location.address'],
-          },
-        },
-      },
+            query: searchTerm,
+            path: ['hotelName', 'location.cityName', 'location.address']
+          }
+        }
+      }
     ]).exec();
-
+    console.log(searchResults);
     return searchResults;
   } catch (error) {
     throw new Error('An error occurred while searching hotels.');

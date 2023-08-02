@@ -3,16 +3,6 @@ const User = require('../models/users.model');
 const encryptionUtil = require('../utils/utils');
 const { decrypt } = require('../utils/utils');
 
-// Fetch all users
-exports.getAllUsers = async () => {
-  try {
-    const users = await User.find();
-    return { data: users };
-  } catch (err) {
-    return { error: err.message };
-  }
-};
-
 // Fetch user details by ID along with decrypted card details
 exports.getUserCardDetails = async (userId) => {
   try {

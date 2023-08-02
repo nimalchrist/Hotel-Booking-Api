@@ -29,7 +29,7 @@ db.once('open', () => {
 
 // Use the usersRoute for handling user-related endpoints
 
-app.use('/users', usersRoute);
+app.use('/auth', usersRoute);
 
 //listen section
 app.listen(PORT, (error) => {

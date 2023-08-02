@@ -15,11 +15,10 @@ exports.getAllUsers = async (_req, res) => {
 };
 
 // Fetch user details by ID along with decrypted card details
-exports.getUserDetails = async (req, res) => {
+exports.getUserCardDetails = async (req, res) => {
   try {
     const { userId } = req.params;
-    const decryptedCards = await userService.getUserDetails(userId);
-
+    const decryptedCards = await userService.getUserCardDetails(userId);
     if (decryptedCards.length > 0) {
       return res.json(decryptedCards);
     } else {

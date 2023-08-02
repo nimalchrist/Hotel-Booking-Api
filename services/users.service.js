@@ -14,7 +14,7 @@ exports.getAllUsers = async () => {
 };
 
 // Fetch user details by ID along with decrypted card details
-exports.getUserDetails = async (userId) => {
+exports.getUserCardDetails = async (userId) => {
   try {
     // Find the user by user ID and project only the addedCards field
     const user = await User.findOne({ _id: userId }, { addedCards: 1 });
@@ -34,7 +34,7 @@ exports.getUserDetails = async (userId) => {
         cardName: addedCard.cardName,
       }));
 
-      return { data: decryptedCards };
+      return decryptedCards;
     } else {
       // If the user has no saved cards, return a message
       return { message: 'No saved cards.' };

@@ -1,10 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const routes = require('./routes/routes');
+const routes = require('./routes/hotels.route');
 
 //middleware sections
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({extended:true}));
 
 //routes
 app.use("/",routes);
@@ -15,7 +16,7 @@ mongoose.set("debug", true);
 //Database connection
 const connectToDatabase = async () => {
   try {
-    await mongoose.connect("mongodb://127.0.0.1:27017/booking_hotel", {
+    await mongoose.connect("mongodb+srv://gceInterns:IcanioGCE@gcecluster1.hfhvmqk.mongodb.net/golobe_db", {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 15000,
@@ -27,7 +28,7 @@ const connectToDatabase = async () => {
 };
 
 const startServer = () => {
-  const PORT = 3000;
+  const PORT = 7423;
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });

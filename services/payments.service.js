@@ -5,7 +5,7 @@ const Hotel = require('../models/hotels.model');
 
 // Function to add a new payment record
 exports.addPayment = async (req, res) => {
-  const userId =req.params.userId;
+  const userId =req.user;
   const hotelId=req.params.hotelId;
 
 

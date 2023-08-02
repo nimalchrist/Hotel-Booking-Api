@@ -94,14 +94,13 @@ exports.getUserCardDetails = async (userId) => {
     // Check if the user has saved cards
     if (user.addedCards.length > 0) {
       // Decrypt the card details in the addedCards field
-      const decryptedCards = usersModel.addedCards.map((addedCard) => ({
+      const decryptedCards = user.addedCards.map((addedCard) => ({
         cardHolder: addedCard.cardHolder,
         cardNumber: decrypt(addedCard.cardNumber),
         expirationDate: addedCard.expirationDate,
         cvv: decrypt(addedCard.cvv),
         cardName: addedCard.cardName,
       }));
-
       return decryptedCards;
     } else {
       // If the user has no saved cards, return a message

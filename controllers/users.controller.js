@@ -49,7 +49,22 @@ exports.addNewCard = async (req, res) => {
     const { error } = Joi.object({
       cardHolder: Joi.string().required(),
       cardNumber: Joi.string().length(16).pattern(/^[0-9]+$/).required(),
-      expirationDate: Joi.string().trim().required().pattern(/^\d{2}\/\d{2}$/),
+      expirationDate: Joi.string().trim().required().custom((value, helpers) => {
+        const dateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+        if (!dateRegex.test(value)) {
+          return helpers.message('Expiration date must be in the format MM/YY');
+        }
+    
+        const [month, year] = value.split('/');
+        const currentYear = new Date().getFullYear() % 100; // Get the last two digits of the current year
+        const currentMonth = new Date().getMonth() + 1; // Months are zero-based
+    
+        if (+year < currentYear || (+year === currentYear && +month < currentMonth)) {
+          return helpers.message('Expiration date must be in the future');
+        }
+    
+        return value;
+      }),
       cvv: Joi.string().length(3).pattern(/^[0-9]+$/).required(),
     }).validate(req.body);
 

@@ -46,7 +46,7 @@ exports.addNewCard = async (req, res) => {
   try {
     const { userId } = req.params;
     const { error } = Joi.object({
-      cardHolder: Joi.string().required().pattern(/^[A-Za-z]+$/).message('Card holder must contain only letters'),
+      cardHolder: Joi.string().required().pattern(/^[A-Za-z\s]+$/).message('Card holder must contain only letters and spaces'),
       cardNumber: Joi.string().length(16).pattern(/^[0-9]+$/).required(),
       expirationDate: Joi.string().trim().required().custom((value, helpers) => {
         const dateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;

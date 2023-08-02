@@ -93,3 +93,14 @@ exports.insertRoom = async (hotelId, roomData) => {
     throw new Error('Error inserting room');
   }
 };
+exports.getGuestReviews = async (hotelId) => {
+  try {
+    const hotel = await Hotel.findById(hotelId).populate({
+      path: 'guestReviews.user',
+      select: 'userName profilePicture',
+    }).select('guestReviews.comment guestReviews.guestRating');
+    return hotel;
+  } catch (error) {
+    throw new Error('Error fetching guest reviews');
+  }
+};

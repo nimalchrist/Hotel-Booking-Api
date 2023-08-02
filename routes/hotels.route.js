@@ -9,5 +9,6 @@ router.get('/hotels/:hotelId', controllers.getHotelById);
 router.post('/hotels/:hotelId/reviews', controllers.addReview);
 router.delete('/hotels/:hotelId/reviews/:reviewId', controllers.deleteReview);
 router.post('/hotels/:hotelId/rooms', controllers.insertRoom);
+router.get("/hotels/:hotelId/guest-reviews", controllers.getGuestReviews);
 
 module.exports = router;

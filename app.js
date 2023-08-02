@@ -2,6 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/users.route");
+const hotelsRouter = require("./routes/hotels.route");
 const session = require("express-session");
 const passport = require("passport");
 const cors = require("cors");
@@ -51,6 +52,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use("/auth", authRoutes);
+app.use(hotelsRouter);
 
 //listen section
 app.listen(PORT, (error) => {

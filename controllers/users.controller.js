@@ -162,99 +162,169 @@ exports.logoutController = (req, res) => {
 };
 // To View list of favourite hotels
 exports.view = async (req, res) => {
-  if(req.isAuthenticated()){
+  if (req.isAuthenticated()) {
     try {
-      const  user_id  = req.user;
-      const list = await userServices.view(user_id); 
+      const user_id = req.user;
+      const list = await userServices.view(user_id);
       // if favourite list is empty
       if (list[0].favouriteHotels.length == 0) {
         res.status(404).json({ msg: "No hotels are added yet" });
-      } 
-      else {
-        console.log("Total count ",list[0].favouriteHotels.length)
+      } else {
+        console.log("Total count ", list[0].favouriteHotels.length);
         res.status(200).json(list[0].favouriteHotels);
       }
     } catch (error) {
-      console.error('Error fetching hotel details:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error("Error fetching hotel details:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
   }
-  else{
-    return res.status(401).json({message: "Please login to continue"});
-  }
-    
 };
 
 // To add a hotels to avourites hotels
 exports.add = async (req, res) => {
-  if(req.isAuthenticated())
-  {
+  if (req.isAuthenticated()) {
     try {
       const user_id = req.user;
-      const { hotel_id}= req.params;
-      const list = await userServices.add(user_id,hotel_id); 
+      const { hotel_id } = req.params;
+      const list = await userServices.add(user_id, hotel_id);
       // if list is empty
       if (!list) {
         res.status(404).json({ msg: "Error occured " });
-        
       } else {
         // if success return list of favourites
-        res.status(200).json({ msg: "Hotel added successfully" , Favorites : list.favouriteHotels});
+        res.status(200).json({
+          msg: "Hotel added successfully",
+          Favorites: list.favouriteHotels,
+        });
       }
     } catch (error) {
-      console.error('Error fetching hotel details:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error("Error fetching hotel details:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
   }
-  else{
-    return res.status(401).json({message: "Please login to continue"});
-  }
-  
 };
 
 // to remove a hotel from favourite hotels
 
 exports.remove = async (req, res) => {
-  if(req.isAuthenticated()){
+  if (req.isAuthenticated()) {
     try {
       const user_id = req.user;
-      const {hotel_id}= req.params;
-      const list = await userServices.remove(user_id,hotel_id); 
+      const { hotel_id } = req.params;
+      const list = await userServices.remove(user_id, hotel_id);
       //if list is empty
-      if (list==0) {
+      if (list == 0) {
         res.status(404).json({ msg: "Hotel not found" });
-      } 
-      else {
+      } else {
         res.status(200).json({ msg: "Hotel removed successfully" });
         console.log(service.view(user_id));
       }
-    } 
-    catch (error) {
-      console.error('Error fetching hotel details:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    } catch (error) {
+      console.error("Error fetching hotel details:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
   }
-  }
-  else{
-    return res.status(401).json({message: "Please login to continue"});
-  }
-    
 };
 //recent searches
 
 exports.recent = async (req, res) => {
-  if(req.isAuthenticated()){
+  if (req.isAuthenticated()) {
     try {
       const user_id = req.user;
-      const {hotel_id}= req.params;
-      const hotels = await userServices.recent(user_id,hotel_id);
+      const { hotel_id } = req.params;
+      const hotels = await userServices.recent(user_id, hotel_id);
       res.status(200).json(hotels.recentVisitsOfHotels);
-    } 
-    catch (error) {
-      console.error('Error occurred:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    } catch (error) {
+      console.error("Error occurred:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
   }
-  else{
+};
+
+// Fetch user details by ID along with decrypted card details
+exports.getUserCardDetails = async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const userId = req.user;
+      const decryptedCards = await userServices.getUserCardDetails(userId);
+      if (decryptedCards.length > 0) {
+        return res.json(decryptedCards);
+      } else {
+        return res.json({ message: "No saved cards." });
+      }
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
+  }
+};
+
+// Function to add new card details to the addedCards field
+exports.addNewCard = async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const userId = req.user;
+      const { error } = Joi.object({
+        cardHolder: Joi.string()
+          .required()
+          .pattern(/^[A-Za-z\s]+$/)
+          .message("Card holder must contain only letters and spaces"),
+        cardNumber: Joi.string()
+          .length(16)
+          .pattern(/^[0-9]+$/)
+          .required(),
+        expirationDate: Joi.string()
+          .trim()
+          .required()
+          .custom((value, helpers) => {
+            const dateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+            if (!dateRegex.test(value)) {
+              return helpers.message(
+                "Expiration date must be in the format MM/YY"
+              );
+            }
+
+            const [month, year] = value.split("/");
+            const currentYear = new Date().getFullYear() % 100; // Get the last two digits of the current year
+            const currentMonth = new Date().getMonth() + 1; // Months are zero-based
+
+            if (
+              +year < currentYear ||
+              (+year === currentYear && +month < currentMonth)
+            ) {
+              return helpers.message("Expiration date must be in the future");
+            }
+
+            return value;
+          }),
+        cvv: Joi.string()
+          .length(3)
+          .pattern(/^[0-9]+$/)
+          .required(),
+      }).validate(req.body);
+
+      if (error) {
+        return res.status(400).json({ error: error.details[0].message });
+      }
+
+      const result = await userServices.addNewCard(userId, req.body);
+      if (result.error) {
+        return res.status(500).json({ error: result.error });
+      }
+      return res.json({ message: result.message });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }else{
     return res.status(401).json({message: "Please login to continue"});
   }
 };

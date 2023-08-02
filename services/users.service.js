@@ -63,7 +63,7 @@ exports.recent = async (user_id,hotel_id)=>{
     const recents = result[0].recentVisitsOfHotels;
     //if already present ingore push operation 
     if (recents.includes(hotel_id)){
-        return result[0]
+        return await usersModel.find({_id:user_id},{recentVisitsOfHotels:1,_id:0}).populate('recentVisitsOfHotels');
     }
      //if not present push into array
     else{
@@ -73,7 +73,13 @@ exports.recent = async (user_id,hotel_id)=>{
             console.log(after_popped.recentVisitsOfHotels)
         }
         // if size is in the limit, just add the hotel_id
-        return await usersModel.findByIdAndUpdate(user_id,{$push:{recentVisitsOfHotels: hotel_id}},{ new: true });
+       await usersModel.findByIdAndUpdate(user_id,{$push:{recentVisitsOfHotels: hotel_id}},{ new: true }).populate('recentVisitsOfHotels');
+       return this.recent_search1(user_id);
     }
     
+}
+
+//listing recent_searches when user logins 
+exports.recent_search1 = async (user_id)=>{
+  return await usersModel.find({_id: user_id},{recentVisitsOfHotels:1,_id:0}).populate('recentVisitsOfHotels');
 }

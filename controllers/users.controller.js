@@ -247,7 +247,26 @@ exports.recent = async (req, res) => {
       const user_id = req.user;
       const {hotel_id}= req.params;
       const hotels = await userServices.recent(user_id,hotel_id);
-      res.status(200).json(hotels.recentVisitsOfHotels);
+      console.log(hotels)
+      res.status(200).json(hotels);
+    } 
+    catch (error) {
+      console.error('Error occurred:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+  else{
+    return res.status(401).json({message: "Please login to continue"});
+  }
+};
+//recent searches
+
+exports.recent_search = async (req, res) => {
+  if(req.isAuthenticated()){
+    try {
+      const user_id = req.user;
+      const hotels = await userServices.recent_search1(user_id);
+      res.status(200).json(hotels);
     } 
     catch (error) {
       console.error('Error occurred:', error);

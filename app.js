@@ -1,4 +1,5 @@
 const express = require("express");
+const route = require('./routes/users.route')
 require("dotenv").config();
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/users.route");
@@ -54,6 +55,8 @@ app.use(passport.session());
 app.use("/auth", authRoutes);
 app.use(hotelsRouter);
 
+// Routes
+app.use("/",route);
 //listen section
 app.listen(PORT, (error) => {
   if (error) {

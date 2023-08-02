@@ -1,4 +1,5 @@
 // TODO the definition of payments model
+const mongoose = require('mongoose');
 const paymentSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -11,8 +12,7 @@ const paymentSchema = new mongoose.Schema({
   paymentStatus: {
     type: String,
     enum: ["paid", "unpaid"],
-    default: "unpaid",
-    required: true,
+    default: "unpaid"
   },
 });
 

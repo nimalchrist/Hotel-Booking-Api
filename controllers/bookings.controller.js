@@ -1,4 +1,5 @@
-const services = require("../services/bookings.service");
+const bookingService = require("../services/bookings.service");
+const hotelService = require("../services/hotels.service");
 const Hotel = require("../models/hotels.model");
 const Booking = require("../models/bookings.model");
 
@@ -10,16 +11,16 @@ exports.createBooking = async (req, res) => {
       const { hotelId, paymentId, reservation } = req.body;
 
       // Find the hotel to update the room count and total rooms
-      const hotel = await Hotel.findById(hotelId);
+      const hotel = await hotelService.getHotelById(hotelId);
       if (!hotel) {
         return res.status(404).json({ error: "Hotel not found" });
       }
 
       // Find the room in the hotel with the specified roomType and roomId
-      const room = Hotel.find({
-        "room._id": reservation.roomId,
-        "room.roomType": reservation.roomType,
-      });
+      const room = bookingService.findHotelRoom(
+        reservation.roomId,
+        reservation.roomType
+      );
       if (!room) {
         return res.status(404).json({ error: "Room not found" });
       }
@@ -38,7 +39,7 @@ exports.createBooking = async (req, res) => {
       );
 
       // Save the updated hotel
-      await hotel.save();
+      await bookingService.updateTheRoomDetails(hotel);
 
       // Create the new booking
       const newBooking = new Booking({
@@ -49,11 +50,11 @@ exports.createBooking = async (req, res) => {
       });
 
       // Save the booking to the database
-      await newBooking.save();
-
+      const bookedData = await bookingService.createBooking(newBooking);
+      console.log(bookedData);
       res
         .status(201)
-        .json({ msg: "Booking created successfully", booking: newBooking });
+        .json({ msg: "Booking created successfully", booking: bookedData });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Internal server error" });
@@ -65,11 +66,9 @@ exports.createBooking = async (req, res) => {
 
 exports.getHotelBookings = async (req, res) => {
   const { hotelId } = req.params;
-
   try {
-    // Call the getHotelBookings function from services.js
-    const bookings = await services.getHotelBookings(hotelId);
-
+    // Call the getHotelBookings function from bookingService.js
+    const bookings = await bookingService.getHotelBookings(hotelId);
     res.json(bookings);
   } catch (error) {
     console.error(error);

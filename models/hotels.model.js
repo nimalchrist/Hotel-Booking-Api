@@ -123,5 +123,21 @@ hotelSchema.methods.calculateTotalRooms = function () {
   );
 };
 
+hotelSchema.methods.updateRoomCountAfterBooking = function (
+  roomType,
+  numberOfRoomsBooked
+) {
+  // Find the room in the hotel with the specified roomType
+  const room = this.rooms.find((room) => room.roomType === roomType);
+
+  // If the room is found, update the roomCount
+  if (room) {
+    room.roomCount -= numberOfRoomsBooked;
+  }
+
+  // Recalculate the totalRooms and save the changes
+  this.calculateTotalRooms();
+};
+
 const Hotel = mongoose.model("Hotel", hotelSchema);
 module.exports = Hotel;

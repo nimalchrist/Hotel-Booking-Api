@@ -11,13 +11,10 @@ usersRoute
   .post(usersController.loginController)
   .get(usersController.loginController);
 usersRoute.route("/logout").get(usersController.logoutController);
-
-usersRoute.route("/users/favorites").get(usersController.view);
-
-usersRoute.route("/users/favorites/:hotel_id").post(usersController.add);
-
-usersRoute.route("/users/favorites/:hotel_id").delete(usersController.remove);
-
+usersRoute.route("/users/favourites").get(usersController.view);
+usersRoute.route("/users/favourites/:hotel_id").post(usersController.add);
+usersRoute.route("/users/favourites/:hotel_id").delete(usersController.remove);
+usersRoute.route("/users/recent").get(usersController.recent_search);
 usersRoute.route("/users/recent/:hotel_id").put(usersController.recent);
 
 // GET user details by ID along with decrypted card details

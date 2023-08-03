@@ -1,25 +1,20 @@
-// TODO the services of payments collection
 const Payment = require('../models/payments.model');
 const User = require('../models/users.model');
 const Hotel = require('../models/hotels.model');
 
 // Function to add a new payment record
-exports.addPayment = async (req, res) => {
-  const userId =req.user;
-  const hotelId=req.params.hotelId;
-
-
+exports.addPayment = async (userId, hotelId) => {
   try {
     // Find the user and hotel documents from their respective collections
     const user = await User.findById(userId);
-   
-    if ( !user) {
-      return res.status(404).json({ error: ' user not found.' });
+
+    if (!user) {
+      return { status: 'error', message: 'User not found.' };
     }
-    
+
     const hotel = await Hotel.findById(hotelId);
-    if ( !hotel) {
-      return res.status(404).json({ error: ' Hotel not found.' });
+    if (!hotel) {
+      return { status: 'error', message: 'Hotel not found.' };
     }
 
     // Assuming 'cards' is an array of card objects in the user document
@@ -34,7 +29,7 @@ exports.addPayment = async (req, res) => {
         paymentStatus: 'unpaid', // Payment status set to 'unpaid'
       });
 
-      return res.status(200).json({ status: 'unpaid' });
+      return { status: 'success', paymentStatus: 'unpaid' };
     }
 
     // Find existing payment details for the user
@@ -44,7 +39,7 @@ exports.addPayment = async (req, res) => {
       // If user is a regular user with payment details, update the payment status to 'paid'
       existingPayment.paymentStatus = 'paid';
       await existingPayment.save();
-      return res.status(200).json({ status: 'paid' });
+      return { status: 'success', paymentStatus: 'paid' };
     }
 
     // Assuming payment processing is successful, create a new payment record in the database
@@ -54,9 +49,9 @@ exports.addPayment = async (req, res) => {
       paymentStatus: 'paid', // Store the hotel's ObjectId in the payment record
     });
 
-    return res.status(200).json({ status: 'paid' });
+    return { status: 'success', paymentStatus: 'paid' };
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: 'An error occurred while processing the payment.' });
+    return { status: 'error', message: 'An error occurred while processing the payment.' };
   }
 };

@@ -1,4 +1,4 @@
-const Booking = require("../models/booking");
+const Booking = require("../models/bookings.model");
 
 // Function to create a new booking
 

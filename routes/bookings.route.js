@@ -1,8 +1,8 @@
-const express = require('express');
-const controller=require("../controllers/controller");
+const express = require("express");
+const bookingController = require("../controllers/bookings.controller");
 const router = express.Router();
 
-router.route("/booking").post(controller.createBooking);
-router.route("/booking/:hotelId").get(controller.getHotelBookings);
+router.route("/booking/addbooking").post(bookingController.createBooking);
+router.route("/booking/:hotelId").get(bookingController.getHotelBookings);
 
 module.exports = router;

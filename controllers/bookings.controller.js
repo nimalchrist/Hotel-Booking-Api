@@ -1,6 +1,6 @@
-const services = require("../services/services");
-const Hotel = require("../models/hotel");
-const Booking = require("../models/booking");
+const services = require("../services/bookings.service");
+const Hotel = require("../models/hotels.model");
+const Booking = require("../models/bookings.model");
 
 exports.createBooking = async (req, res) => {
   if (req.isAuthenticated()) {
@@ -31,6 +31,7 @@ exports.createBooking = async (req, res) => {
           .json({ error: "Not enough available rooms for booking" });
       }
 
+      //update the room count
       hotel.updateRoomCountAfterBooking(
         reservation.roomType,
         reservation.numberOfRooms

@@ -35,6 +35,11 @@ const cardSchema = new mongoose.Schema({
     enum: ["MasterCard", "Visa", "American Express", "Unknown"],
     default: "Unknown",
   },
+  cardName: {
+    type: String,
+    enum: ["MasterCard", "Visa", "American Express", "Unknown"],
+    default: "Unknown",
+  },
 });
 
 const userSchema = new mongoose.Schema({

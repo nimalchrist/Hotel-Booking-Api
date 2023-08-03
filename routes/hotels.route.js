@@ -1,14 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const controllers = require('../controllers/hotels.controller');
+const hotelController = require('../controllers/hotels.controller');
 
-router.get('/hotels', controllers.getAllHotels);
-router.post('/hotels', controllers.createHotel);
-router.put('/hotels/:hotelId', controllers.updateHotel);
-router.get('/hotels/:hotelId', controllers.getHotelById);
-router.post('/hotels/:hotelId/reviews', controllers.addReview);
-router.delete('/hotels/:hotelId/reviews/:reviewId', controllers.deleteReview);
-router.post('/hotels/:hotelId/rooms', controllers.insertRoom);
-router.get("/hotels/:hotelId/guest-reviews", controllers.getGuestReviews);
+// fency's routes
+router.get("/delete/:id", hotelController.deleteHotelById);
+router.get("/search", hotelController.handleSearchRequest);
+router.get("/findAll", hotelController.getAllHotels);
+
+// kannan's routes
+router.post('/', hotelController.createHotel);
+router.get('/:hotelId', hotelController.getHotelById);
+router.put('/:hotelId', hotelController.updateHotel);
+router.post('/:hotelId/reviews', hotelController.addReview);
+router.delete('/:hotelId/reviews/:reviewId', hotelController.deleteReview);
+router.post('/:hotelId/rooms', hotelController.insertRoom);
+router.get("/:hotelId/guest-reviews", hotelController.getGuestReviews);
 
 module.exports = router;

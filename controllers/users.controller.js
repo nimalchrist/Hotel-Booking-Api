@@ -237,14 +237,13 @@ exports.recent = async (req, res) => {
   if (req.isAuthenticated()) {
     try {
       const user_id = req.user;
-      const {hotel_id}= req.params;
-      const hotels = await userServices.recent(user_id,hotel_id);
-      console.log(hotels)
+      const { hotel_id } = req.params;
+      const hotels = await userServices.recent(user_id, hotel_id);
+      console.log(hotels);
       res.status(200).json(hotels);
-    } 
-    catch (error) {
-      console.error('Error occurred:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    } catch (error) {
+      console.error("Error occurred:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   } else {
     return res.status(401).json({ message: "Please login to continue" });
@@ -337,25 +336,23 @@ exports.addNewCard = async (req, res) => {
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
-  }else{
-    return res.status(401).json({message: "Please login to continue"});
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
   }
 };
-//recent searches
 
+//recent searches
 exports.recent_search = async (req, res) => {
-  if(req.isAuthenticated()){
+  if (req.isAuthenticated()) {
     try {
       const user_id = req.user;
       const hotels = await userServices.recent_search1(user_id);
       res.status(200).json(hotels);
-    } 
-    catch (error) {
-      console.error('Error occurred:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    } catch (error) {
+      console.error("Error occurred:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
-  }
-  else{
-    return res.status(401).json({message: "Please login to continue"});
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
   }
 };

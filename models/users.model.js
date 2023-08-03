@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const Hotel = require('./hotels.model');
+const utils = require('../utils/utils');
 
 const cardSchema = new mongoose.Schema({
   cardNumber: {
@@ -6,6 +8,8 @@ const cardSchema = new mongoose.Schema({
     unique: true,
     sparse: true,
     required: true,
+    set: utils.encrypt, // Encrypt the card number before saving
+    get: utils.decrypt, 
   },
   cardHolder: {
     type: String,
@@ -18,6 +22,23 @@ const cardSchema = new mongoose.Schema({
   cvv: {
     type: String,
     required: true,
+    set: utils.encrypt, // Encrypt the cvv before saving
+    get: utils.decrypt, // Decrypt the cvv when accessed
+  },
+  cardName: {
+    type: String,
+    enum: ['MasterCard', 'Visa', 'American Express', 'Discover','Unknown'],
+    default: 'Unknown',
+  },
+  cardName: {
+    type: String,
+    enum: ["MasterCard", "Visa", "American Express", "Unknown"],
+    default: "Unknown",
+  },
+  cardName: {
+    type: String,
+    enum: ["MasterCard", "Visa", "American Express", "Unknown"],
+    default: "Unknown",
   },
   cardName: {
     type: String,
@@ -75,14 +96,14 @@ const userSchema = new mongoose.Schema({
   favouriteHotels: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "hotels",
+      ref: "Hotel",
     },
   ],
   addedCards: [cardSchema],
   recentVisitsOfHotels: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "hotels",
+      ref: "Hotel",
     },
   ],
   registeredAt: {

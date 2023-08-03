@@ -1,14 +1,19 @@
-// TODO all the routes corresponding to the hotels controller
-
-const express = require("express");
-const hotelController = require("../controllers/hotels.controller");
-
+const express = require('express');
 const router = express.Router();
+const hotelController = require('../controllers/hotels.controller');
 
-router.get("/search", hotelController.handleSearchRequest);
-//router.get("/search", hotelController.searchHotels);
-
+// fency's routes
 router.get("/delete/:id", hotelController.deleteHotelById);
+router.get("/search", hotelController.handleSearchRequest);
 router.get("/findAll", hotelController.getAllHotels);
-router.get("/findById/:id", hotelController.getHotelById);
+
+// kannan's routes
+router.post('/', hotelController.createHotel);
+router.get('/:hotelId', hotelController.getHotelById);
+router.put('/:hotelId', hotelController.updateHotel);
+router.post('/:hotelId/reviews', hotelController.addReview);
+router.delete('/:hotelId/reviews/:reviewId', hotelController.deleteReview);
+router.post('/:hotelId/rooms', hotelController.insertRoom);
+router.get("/:hotelId/guest-reviews", hotelController.getGuestReviews);
+
 module.exports = router;

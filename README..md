@@ -10,6 +10,12 @@ Here are the packages installed for this project:
 - nodemon
 - dotenv
 - mongoose
+- passport
+- passport-local
+- joi
+- express-session
+- passport-google-oauth20
+- passport-facebook
 
 ## Note
 

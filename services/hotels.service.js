@@ -1,6 +1,4 @@
-// TODO the services of hotels collection
 const Hotel = require("../models/hotels.model");
-const mongoose = require('mongoose');
 
 exports.getAllHotels = async () => {
   try {
@@ -93,5 +91,16 @@ exports.insertRoom = async (hotelId, roomData) => {
     return hotel;
   } catch (error) {
     throw new Error('Error inserting room');
+  }
+};
+exports.getGuestReviews = async (hotelId) => {
+  try {
+    const hotel = await Hotel.findById(hotelId).populate({
+      path: 'guestReviews.user',
+      select: 'userName profilePicture',
+    }).select('guestReviews.comment guestReviews.guestRating');
+    return hotel;
+  } catch (error) {
+    throw new Error('Error fetching guest reviews');
   }
 };

@@ -1,4 +1,3 @@
-// TODO all the routes corresponding to the hotels controller
 const express = require('express');
 const router = express.Router();
 const controllers = require('../controllers/hotels.controller');
@@ -10,5 +9,6 @@ router.get('/hotels/:hotelId', controllers.getHotelById);
 router.post('/hotels/:hotelId/reviews', controllers.addReview);
 router.delete('/hotels/:hotelId/reviews/:reviewId', controllers.deleteReview);
 router.post('/hotels/:hotelId/rooms', controllers.insertRoom);
+router.get("/hotels/:hotelId/guest-reviews", controllers.getGuestReviews);
 
 module.exports = router;

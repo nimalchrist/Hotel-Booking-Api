@@ -24,6 +24,7 @@ exports.handleSearchRequest = async (req, res) => {
     // Validate check-in and check-out dates
     const parsedCheckInDate = Date.parse(checkInDate);
     const parsedCheckOutDate = Date.parse(checkOutDate);
+    const currentDate = Date.now();
 
     if (isNaN(parsedCheckInDate) || isNaN(parsedCheckOutDate)) {
       return res.status(400).json({
@@ -31,6 +32,18 @@ exports.handleSearchRequest = async (req, res) => {
           "Invalid date format. Please provide dates in the format YYYY-MM-DD.",
       });
     }
+    if (parsedCheckInDate < currentDate) {
+      return res.status(400).json({
+        error: "Check-in date is not valid.",
+      });
+    }
+
+    if (parsedCheckOutDate <= parsedCheckInDate) {
+      return res.status(400).json({
+        error: "Check-out is not valid.",
+      });
+    }
+
 
     // Construct the base query for searching hotels based on the searchTerm and numberOfRooms
     const baseQuery = {
@@ -70,7 +83,7 @@ exports.handleSearchRequest = async (req, res) => {
     }
 
     if (!isNaN(selectedRating)) {
-      additionalFilters.rating = { $gte: selectedRating };
+      additionalFilters.hotelType = { $gte: selectedRating };
     }
 
     console.log(amenityRegexArray);

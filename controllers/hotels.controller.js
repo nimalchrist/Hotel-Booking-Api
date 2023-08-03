@@ -11,8 +11,11 @@ exports.handleSearchRequest = async (req, res) => {
     console.log(searchTerm);
     // Extract the filtering options from query parameters
     const priceRange = req.query.priceRange;
-    const minPrice = parseFloat(priceRange[0]);
-    const maxPrice = parseFloat(priceRange[1]);
+    let minPrice, maxPrice;
+    if(priceRange&& priceRange.length==2){
+    minPrice = parseFloat(priceRange[0]);
+    maxPrice = parseFloat(priceRange[1]);
+  }
     const selectedRating = parseInt(req.query.rating);
     const selectedAmenities = req.query.amenities
       ? req.query.amenities.split(",")

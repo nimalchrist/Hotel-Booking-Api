@@ -1,5 +1,5 @@
 // controllers/payments.controller.js
-const paymentService = require("../services/payments.service");
+const paymentServices = require("../services/payments.service");
 
 exports.addPaymentController = async (req, res) => {
   if (req.isAuthenticated()) {

@@ -1,4 +1,3 @@
-// services/payments.service.js
 const Payment = require('../models/payments.model');
 const User = require('../models/users.model');
 const Hotel = require('../models/hotels.model');

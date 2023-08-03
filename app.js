@@ -1,10 +1,10 @@
 const express = require("express");
-const route = require('./routes/hotels.route')
 require("dotenv").config();
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/users.route");
 const hotelsRouter = require("./routes/hotels.route");
 const paymentsRoutes = require('./routes/payments.route');
+const bookingRoutes = require("./routes/bookings.route");
 const session = require("express-session");
 const passport = require("passport");
 const cors = require("cors");
@@ -54,8 +54,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use("/auth", authRoutes);
-app.use(hotelsRouter);
+app.use("/hotels", hotelsRouter);
 app.use('/payment', paymentsRoutes);
+app.use('/bookings', bookingRoutes);
 
 //listen section
 app.listen(PORT, (error) => {

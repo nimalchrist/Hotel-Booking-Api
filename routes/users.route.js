@@ -3,6 +3,7 @@ const express = require("express");
 usersRoute = express.Router();
 usersController = require("../controllers/users.controller");
 
+// auth routes
 usersRoute
   .route("/register")
   .post(usersController.localAuthRegistrationController);
@@ -11,6 +12,8 @@ usersRoute
   .post(usersController.loginController)
   .get(usersController.loginController);
 usersRoute.route("/logout").get(usersController.logoutController);
+
+// favourites and recents feature route
 usersRoute.route("/users/favourites").get(usersController.view);
 usersRoute.route("/users/favourites/:hotel_id").post(usersController.add);
 usersRoute.route("/users/favourites/:hotel_id").delete(usersController.remove);
@@ -22,5 +25,9 @@ usersRoute.get('/users/user/cards', usersController.getUserCardDetails);
 
 // POST add new card details to the addedCards field
 usersRoute.post('/users/user/cards/saveCard', usersController.addNewCard);
+
+// profile routes
+usersRoute.route("/users/user/profile/update").post(usersController.updateUser);
+
 
 module.exports = usersRoute;

@@ -28,6 +28,7 @@ usersRoute.post('/users/user/cards/saveCard', usersController.addNewCard);
 
 // profile routes
 usersRoute.route("/users/user/profile/update").post(usersController.updateUser);
+usersRoute.route("/users/user/profile").get(usersController.getProfileDetails);
 
 
 module.exports = usersRoute;

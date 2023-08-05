@@ -364,17 +364,34 @@ exports.updateUser = async (req, res) => {
       const userId = req.user;
       const updatedDetails = req.body;
       const updatedUser = await userServices.updateUser(userId, updatedDetails);
-      
+
       if (updatedUser.error) {
         return res.status(401).json({ message: updatedUser.message });
       }
 
       return res.status(200).json(updatedUser);
     } catch (error) {
-      return res.status(400).json({ message: "An error occurred while updating user details" });
+      return res
+        .status(400)
+        .json({ message: "An error occurred while updating user details" });
     }
   } else {
     return res.status(401).json({ message: "Please login to continue" });
   }
 };
 
+exports.getProfileDetails = async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const userId = req.user;
+      const userDetails = await userServices.getProfileInfo(userId);
+      return res.status(200).json(userDetails);
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ message: "An error occurred while updating user details" });
+    }
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
+  }
+};

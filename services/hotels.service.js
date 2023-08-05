@@ -117,9 +117,10 @@ exports.getGuestReviews = async (hotelId) => {
         select: "userName profilePicture",
       })
       .select("guestReviews.comment guestReviews.guestRating");
+    hotel.guestReviews.reverse();
     return hotel;
   } catch (error) {
-    throw new Error("Error fetching guest reviews");
+    return [];
   }
 };
 

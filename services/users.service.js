@@ -91,6 +91,22 @@ exports.updateUser = async (userId, updates) => {
   }
 };
 
+// get profile info
+exports.getProfileInfo = async (user_id) => {
+  return await usersModel.findOne(
+    { _id: user_id },
+    {
+      userName: 1,
+      email: 1,
+      password: 1,
+      phoneNumber: 1,
+      address: 1,
+      dateOfBirth: 1,
+      _id: 0,
+    }
+  );
+};
+
 //Displaying favourites
 exports.view = async (user_id) => {
   return await usersModel

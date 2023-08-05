@@ -347,7 +347,10 @@ exports.recent_search = async (req, res) => {
     try {
       const user_id = req.user;
       const hotels = await userServices.recent_search1(user_id);
-      res.status(200).json(hotels);
+     
+      const output=hotels[0].recentVisitsOfHotels
+      console.log(output.length)
+      res.status(200).json(output);
     } catch (error) {
       console.error("Error occurred:", error);
       res.status(500).json({ error: "Internal server error" });

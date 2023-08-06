@@ -21,14 +21,12 @@ usersRoute.route("/users/recent").get(usersController.recent_search);
 usersRoute.route("/users/recent/:hotel_id").put(usersController.recent);
 
 // GET user details by ID along with decrypted card details
-usersRoute.get('/users/user/cards', usersController.getUserCardDetails);
-
-// POST add new card details to the addedCards field
-usersRoute.post('/users/user/cards/saveCard', usersController.addNewCard);
+usersRoute.get("/users/user/cards", usersController.getUserCardDetails);
+usersRoute.post("/users/user/cards/saveCard", usersController.addNewCard);
 
 // profile routes
 usersRoute.route("/users/user/profile/update").post(usersController.updateUser);
 usersRoute.route("/users/user/profile").get(usersController.getProfileDetails);
-
+usersRoute.route("/users/user/islogined").get(usersController.getNavbarDetails);
 
 module.exports = usersRoute;

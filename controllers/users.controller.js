@@ -120,9 +120,7 @@ exports.loginController = (req, res, next) => {
         if (error) {
           return next(error);
         }
-        return res.redirect(
-          process.env.CLIENT_URL + "/home?clientId=" + user.id
-        );
+        return res.redirect(process.env.CLIENT_URL + "?clientId=" + user.id);
       });
     })(req, res, next);
   } else if (by === "facebook") {
@@ -137,13 +135,66 @@ exports.loginController = (req, res, next) => {
         if (error) {
           return next(error);
         }
-        return res.redirect(
-          process.env.CLIENT_URL + "/home?clientId=" + user.id
-        );
+        return res.redirect(process.env.CLIENT_URL + "?clientId=" + user.id);
       });
     })(req, res, next);
   } else {
     return res.status(400).json({ message: "Invalid access" });
+  }
+};
+
+// specifically for navbar
+exports.getNavbarDetails = async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const userId = req.user;
+      const user = await userServices.getProfileInfo(userId, "navbar");
+      return res.status(200).json({ success: true, info: user });
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  } else {
+    return res.status(200).json({ success: false, info: null });
+  }
+};
+
+// Profile update controllers
+exports.updateUser = async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const userId = req.user;
+      const updatedDetails = req.body;
+      const updatedUser = await userServices.updateUser(userId, updatedDetails);
+
+      if (updatedUser.error) {
+        return res.status(401).json({ message: updatedUser.message });
+      }
+
+      return res.status(200).json(updatedUser);
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ message: "An error occurred while updating user details" });
+    }
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
+  }
+};
+
+// for profile page
+exports.getProfileDetails = async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const userId = req.user;
+      const userDetails = await userServices.getProfileInfo(userId, "profile");
+      return res.status(200).json(userDetails);
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ message: "An error occurred while updating user details" });
+    }
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
   }
 };
 
@@ -160,6 +211,7 @@ exports.logoutController = (req, res) => {
     return res.status(400).json({ message: "Sorry, Bad request" });
   }
 };
+
 // To View list of favourite hotels
 exports.view = async (req, res) => {
   if (req.isAuthenticated()) {
@@ -182,7 +234,7 @@ exports.view = async (req, res) => {
   }
 };
 
-// To add a hotels to avourites hotels
+// To add a hotels to favourites hotels
 exports.add = async (req, res) => {
   if (req.isAuthenticated()) {
     try {
@@ -209,7 +261,6 @@ exports.add = async (req, res) => {
 };
 
 // to remove a hotel from favourite hotels
-
 exports.remove = async (req, res) => {
   if (req.isAuthenticated()) {
     try {
@@ -231,8 +282,8 @@ exports.remove = async (req, res) => {
     return res.status(401).json({ message: "Please login to continue" });
   }
 };
-//recent searches
 
+//recent searches
 exports.recent = async (req, res) => {
   if (req.isAuthenticated()) {
     try {
@@ -351,45 +402,6 @@ exports.recent_search = async (req, res) => {
     } catch (error) {
       console.error("Error occurred:", error);
       res.status(500).json({ error: "Internal server error" });
-    }
-  } else {
-    return res.status(401).json({ message: "Please login to continue" });
-  }
-};
-
-// Profile update controllers
-exports.updateUser = async (req, res) => {
-  if (req.isAuthenticated()) {
-    try {
-      const userId = req.user;
-      const updatedDetails = req.body;
-      const updatedUser = await userServices.updateUser(userId, updatedDetails);
-
-      if (updatedUser.error) {
-        return res.status(401).json({ message: updatedUser.message });
-      }
-
-      return res.status(200).json(updatedUser);
-    } catch (error) {
-      return res
-        .status(400)
-        .json({ message: "An error occurred while updating user details" });
-    }
-  } else {
-    return res.status(401).json({ message: "Please login to continue" });
-  }
-};
-
-exports.getProfileDetails = async (req, res) => {
-  if (req.isAuthenticated()) {
-    try {
-      const userId = req.user;
-      const userDetails = await userServices.getProfileInfo(userId);
-      return res.status(200).json(userDetails);
-    } catch (error) {
-      return res
-        .status(400)
-        .json({ message: "An error occurred while updating user details" });
     }
   } else {
     return res.status(401).json({ message: "Please login to continue" });

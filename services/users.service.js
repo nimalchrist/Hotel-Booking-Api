@@ -92,19 +92,26 @@ exports.updateUser = async (userId, updates) => {
 };
 
 // get profile info
-exports.getProfileInfo = async (user_id) => {
-  return await usersModel.findOne(
-    { _id: user_id },
-    {
-      userName: 1,
-      email: 1,
-      password: 1,
-      phoneNumber: 1,
-      address: 1,
-      dateOfBirth: 1,
-      _id: 0,
-    }
-  );
+exports.getProfileInfo = async (user_id, detailsFor) => {
+  if (detailsFor == "navbar") {
+    return await usersModel.findOne(
+      { _id: user_id },
+      { profilePicture: 1, userName: 1 }
+    );
+  } else {
+    return await usersModel.findOne(
+      { _id: user_id },
+      {
+        userName: 1,
+        email: 1,
+        password: 1,
+        phoneNumber: 1,
+        address: 1,
+        dateOfBirth: 1,
+        _id: 0,
+      }
+    );
+  }
 };
 
 //Displaying favourites

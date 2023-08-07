@@ -10,12 +10,10 @@ exports.handleSearchRequest = async (req, res) => {
     const numberOfRooms = parseInt(req.query.rooms);
     console.log(searchTerm);
     // Extract the filtering options from query parameters
-    const priceRange = req.query.priceRange;
-    let minPrice, maxPrice;
-    if(priceRange&& priceRange.length==2){
-    minPrice = parseFloat(priceRange[0]);
-    maxPrice = parseFloat(priceRange[1]);
-  }
+    var priceRange = req.query.priceRanges ? JSON.parse(req.query.priceRanges) : [];
+    var [minPrice, maxPrice] = priceRange;
+    console.log(priceRange)
+  
     const selectedRating = parseInt(req.query.rating);
     const selectedAmenities = req.query.amenities
       ? req.query.amenities.split(",")
@@ -44,7 +42,6 @@ exports.handleSearchRequest = async (req, res) => {
       });
     }
 
-
     // Construct the base query for searching hotels based on the searchTerm and numberOfRooms
     const baseQuery = {
       $or: [
@@ -70,18 +67,25 @@ exports.handleSearchRequest = async (req, res) => {
 
     // Add additional filters to the base query based on user-selected options
     const additionalFilters = {};
+       
+    if(priceRange&& priceRange.length==2){
+      minPrice = parseFloat(priceRange[0]);
+      maxPrice = parseFloat(priceRange[1]);
+  
+      const priceFilter = {};
+      
+      if (!isNaN(minPrice)) {
+        priceFilter.$gte = minPrice;
+      }
+      
+      if (!isNaN(maxPrice)) {
+        priceFilter.$lte = maxPrice;
+      }
+      console.log("price filter"+priceFilter);
+      additionalFilters.ratePerNight = priceFilter;
 
-    if (!isNaN(minPrice)) {
-      additionalFilters.ratePerNight = { $gte: minPrice };
     }
-
-    if (!isNaN(maxPrice)) {
-      additionalFilters.ratePerNight = {
-        ...additionalFilters.price,
-        $lte: maxPrice,
-      };
-    }
-
+    
     if (!isNaN(selectedRating)) {
       additionalFilters.hotelType = { $gte: selectedRating };
     }

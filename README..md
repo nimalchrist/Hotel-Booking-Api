@@ -16,6 +16,8 @@ Here are the packages installed for this project:
 - express-session
 - passport-google-oauth20
 - passport-facebook
+- multer
+- path
 
 ## Note
 

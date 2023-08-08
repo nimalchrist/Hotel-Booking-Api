@@ -27,9 +27,10 @@ async function connectToDatabase() {
 connectToDatabase();
 
 //middlewares section
+app.use("/profiles", express.static(__dirname + "/profiles"));
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
     methods: "GET, POST, PUT, DELETE",
     credentials: true,
   })

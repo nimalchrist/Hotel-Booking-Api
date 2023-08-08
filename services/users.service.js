@@ -114,6 +114,45 @@ exports.getProfileInfo = async (user_id, detailsFor) => {
   }
 };
 
+//upload image
+exports.uploadImage = async (user_id, type, filename) => {
+  try {
+    const user = await usersModel.findById(user_id);
+    console.log(user);
+    if (!user) {
+      return { success: false };
+    }
+    if (type == "profile") {
+      user.profilePicture = `http://localhost:3200/profiles/${filename}`;
+    } else {
+      user.coverPicture = `http://localhost:3200/profiles/${filename}`;
+    }
+
+    console.log(user);
+    await user.save();
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
+};
+
+exports.getImage = async (user_id, type) => {
+  const user = await usersModel.findById({ _id: user_id });
+  if (type == "profile") {
+    if (user.profilePicture) {
+      return user.profilePicture;
+    } else {
+      return null;
+    }
+  } else {
+    if (user.coverPicture) {
+      return user.coverPicture;
+    } else {
+      return null;
+    }
+  }
+};
+
 //Displaying favourites
 exports.view = async (user_id) => {
   return await usersModel

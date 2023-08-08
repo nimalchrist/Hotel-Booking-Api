@@ -198,6 +198,45 @@ exports.getProfileDetails = async (req, res) => {
   }
 };
 
+// get profile picture
+exports.getImageController = async (req, res) => {
+  if (req.isAuthenticated()) {
+    const userId = req.user;
+    const type = req.body.type;
+    const image = await userServices.getImage(userId, type);
+    return res.status(200).json({ picture: image });
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
+  }
+};
+
+// upload new/update profile or cover picture
+exports.uploadOrEditPicture = async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const userId = req.user;
+      const filename = req.file.originalname;
+      if (!filename) {
+        return res.status(401).json({ message: "invalid image format" });
+      }
+      console.log(filename);
+      const type = req.body.type;
+      console.log(type);
+
+      const response = await userServices.uploadImage(userId, type, filename);
+      if (response.success) {
+        return res.status(200).json({ message: "image uploaded successfully" });
+      } else {
+        return res.status(500).json({ message: "Internal server error" });
+      }
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
+  }
+};
+
 // logout controller
 exports.logoutController = (req, res) => {
   if (req.isAuthenticated()) {

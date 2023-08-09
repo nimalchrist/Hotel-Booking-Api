@@ -408,17 +408,7 @@ exports.addNewCard = async (req, res) => {
       if (error) {
         return res.status(400).json({ error: error.details[0].message });
       }
-      // Check if the card number already exists in addedCards for this user
-      const userCards = await userServices.getUserCardDetails(userId);
-      const cardExists = userCards.some(
-        (card) => card.cardNumber === req.body.cardNumber
-      );
-
-      if (cardExists) {
-        return res.status(409).json({
-          error: "Card with the same number already exists for this user.",
-        });
-      }
+      
 
       const result = await userServices.addNewCard(userId, req.body);
       if (result.error) {

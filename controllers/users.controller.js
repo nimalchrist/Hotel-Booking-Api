@@ -313,7 +313,7 @@ exports.remove = async (req, res) => {
         res.status(404).json({ msg: "Hotel not found" });
       } else {
         res.status(200).json({ msg: "Hotel removed successfully" });
-        console.log(service.view(user_id));
+        
       }
     } catch (error) {
       console.error("Error fetching hotel details:", error);
@@ -429,10 +429,9 @@ exports.recent_search = async (req, res) => {
     try {
       const user_id = req.user;
       const hotels = await userServices.recent_search1(user_id);
-
-      const output = hotels[0].recentVisitsOfHotels;
-      console.log(output.length);
-      res.status(200).json(output);
+      const output=hotels[0].recentVisitsOfHotels
+      console.log(output.length)
+      res.status(200).json(output.reverse());
     } catch (error) {
       console.error("Error occurred:", error);
       res.status(500).json({ error: "Internal server error" });

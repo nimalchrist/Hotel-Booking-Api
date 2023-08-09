@@ -70,15 +70,17 @@ exports.recent = async (user_id,hotel_id)=>{
     }
      //if not present push into array
     else{
+        console.log(recents.length)
         // the array limit for recent visits is 10. So if array size exceeds, delete the last one and insert new hotel 
-        if(recents.length>9){
-            const after_popped= await usersModel.findByIdAndUpdate(user_id,{$pop:{recentVisitsOfHotels:-1}},{ new: true });
-            console.log(after_popped.recentVisitsOfHotels)
+        if(recents.length==10){
+            const after_popped= await usersModel.findByIdAndUpdate(user_id,{$pop:{recentVisitsOfHotels:-1}},{ new: true })
         }
         // if size is in the limit, just add the hotel_id
-       await usersModel.findByIdAndUpdate(user_id,{$push:{recentVisitsOfHotels: hotel_id}},{ new: true }).populate('recentVisitsOfHotels');
-       return this.recent_search1(user_id);
-    }
+        const after_pushed= await usersModel.findByIdAndUpdate(user_id,{$push:{recentVisitsOfHotels: hotel_id}},{ new: true });
+       
+        return this.recent_search1(user_id);
+      }
+    
     
 }
 

@@ -60,7 +60,7 @@ exports.updateUser = async (userId, updates) => {
 
     // Check if the phoneNumber is being updated and if it's unique
     if (updates.phoneNumber && updates.phoneNumber !== user.phoneNumber) {
-      const existingUserWithPhoneNumber = await User.findOne({
+      const existingUserWithPhoneNumber = await usersModel.findOne({
         phoneNumber: updates.phoneNumber,
       });
       if (

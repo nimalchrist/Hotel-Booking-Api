@@ -120,9 +120,7 @@ exports.loginController = (req, res, next) => {
         if (error) {
           return next(error);
         }
-        return res.redirect(
-          process.env.CLIENT_URL + "/home?clientId=" + user.id
-        );
+        return res.redirect(process.env.CLIENT_URL + "?clientId=" + user.id);
       });
     })(req, res, next);
   } else if (by === "facebook") {
@@ -137,13 +135,105 @@ exports.loginController = (req, res, next) => {
         if (error) {
           return next(error);
         }
-        return res.redirect(
-          process.env.CLIENT_URL + "/home?clientId=" + user.id
-        );
+        return res.redirect(process.env.CLIENT_URL + "?clientId=" + user.id);
       });
     })(req, res, next);
   } else {
     return res.status(400).json({ message: "Invalid access" });
+  }
+};
+
+// specifically for navbar
+exports.getNavbarDetails = async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const userId = req.user;
+      const user = await userServices.getProfileInfo(userId, "navbar");
+      return res.status(200).json({ success: true, info: user });
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  } else {
+    return res.status(200).json({ success: false, info: null });
+  }
+};
+
+// Profile update controllers
+exports.updateUser = async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const userId = req.user;
+      const updatedDetails = req.body;
+      const updatedUser = await userServices.updateUser(userId, updatedDetails);
+
+      if (updatedUser.error) {
+        return res.status(401).json({ message: updatedUser.message });
+      }
+
+      return res.status(200).json(updatedUser);
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ message: "An error occurred while updating user details" });
+    }
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
+  }
+};
+
+// for profile page
+exports.getProfileDetails = async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const userId = req.user;
+      const userDetails = await userServices.getProfileInfo(userId, "profile");
+      return res.status(200).json(userDetails);
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ message: "An error occurred while updating user details" });
+    }
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
+  }
+};
+
+// get profile picture
+exports.getImageController = async (req, res) => {
+  if (req.isAuthenticated()) {
+    const userId = req.user;
+    const type = req.body.type;
+    const image = await userServices.getImage(userId, type);
+    return res.status(200).json({ picture: image });
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
+  }
+};
+
+// upload new/update profile or cover picture
+exports.uploadOrEditPicture = async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      const userId = req.user;
+      const filename = req.file.originalname;
+      if (!filename) {
+        return res.status(401).json({ message: "invalid image format" });
+      }
+      console.log(filename);
+      const type = req.body.type;
+      console.log(type);
+
+      const response = await userServices.uploadImage(userId, type, filename);
+      if (response.success) {
+        return res.status(200).json({ message: "image uploaded successfully" });
+      } else {
+        return res.status(500).json({ message: "Internal server error" });
+      }
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
   }
 };
 
@@ -160,6 +250,7 @@ exports.logoutController = (req, res) => {
     return res.status(400).json({ message: "Sorry, Bad request" });
   }
 };
+
 // To View list of favourite hotels
 exports.view = async (req, res) => {
   if (req.isAuthenticated()) {
@@ -182,7 +273,7 @@ exports.view = async (req, res) => {
   }
 };
 
-// To add a hotels to avourites hotels
+// To add a hotels to favourites hotels
 exports.add = async (req, res) => {
   if (req.isAuthenticated()) {
     try {
@@ -209,7 +300,6 @@ exports.add = async (req, res) => {
 };
 
 // to remove a hotel from favourite hotels
-
 exports.remove = async (req, res) => {
   if (req.isAuthenticated()) {
     try {
@@ -231,20 +321,19 @@ exports.remove = async (req, res) => {
     return res.status(401).json({ message: "Please login to continue" });
   }
 };
-//recent searches
 
+//recent searches
 exports.recent = async (req, res) => {
   if (req.isAuthenticated()) {
     try {
       const user_id = req.user;
-      const {hotel_id}= req.params;
-      const hotels = await userServices.recent(user_id,hotel_id);
-      console.log(hotels)
+      const { hotel_id } = req.params;
+      const hotels = await userServices.recent(user_id, hotel_id);
+      console.log(hotels);
       res.status(200).json(hotels);
-    } 
-    catch (error) {
-      console.error('Error occurred:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    } catch (error) {
+      console.error("Error occurred:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   } else {
     return res.status(401).json({ message: "Please login to continue" });
@@ -337,25 +426,26 @@ exports.addNewCard = async (req, res) => {
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
-  }else{
-    return res.status(401).json({message: "Please login to continue"});
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
   }
 };
-//recent searches
 
+//recent searches
 exports.recent_search = async (req, res) => {
-  if(req.isAuthenticated()){
+  if (req.isAuthenticated()) {
     try {
       const user_id = req.user;
       const hotels = await userServices.recent_search1(user_id);
-      res.status(200).json(hotels);
-    } 
-    catch (error) {
-      console.error('Error occurred:', error);
-      res.status(500).json({ error: 'Internal server error' });
+
+      const output = hotels[0].recentVisitsOfHotels;
+      console.log(output.length);
+      res.status(200).json(output);
+    } catch (error) {
+      console.error("Error occurred:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
-  }
-  else{
-    return res.status(401).json({message: "Please login to continue"});
+  } else {
+    return res.status(401).json({ message: "Please login to continue" });
   }
 };

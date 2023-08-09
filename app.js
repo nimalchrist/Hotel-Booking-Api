@@ -3,7 +3,7 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/users.route");
 const hotelsRouter = require("./routes/hotels.route");
-const paymentsRoutes = require('./routes/payments.route');
+const paymentsRoutes = require("./routes/payments.route");
 const bookingRoutes = require("./routes/bookings.route");
 const session = require("express-session");
 const passport = require("passport");
@@ -27,9 +27,10 @@ async function connectToDatabase() {
 connectToDatabase();
 
 //middlewares section
+app.use("/profiles", express.static(__dirname + "/profiles"));
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
     methods: "GET, POST, PUT, DELETE",
     credentials: true,
   })
@@ -55,8 +56,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use("/auth", authRoutes);
 app.use("/hotels", hotelsRouter);
-app.use('/payment', paymentsRoutes);
-app.use('/bookings', bookingRoutes);
+app.use("/payment", paymentsRoutes);
+app.use("/bookings", bookingRoutes);
 
 //listen section
 app.listen(PORT, (error) => {

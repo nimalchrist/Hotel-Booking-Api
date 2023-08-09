@@ -187,7 +187,9 @@ exports.getProfileDetails = async (req, res) => {
     try {
       const userId = req.user;
       const userDetails = await userServices.getProfileInfo(userId, "profile");
-      return res.status(200).json(userDetails);
+      return res
+        .status(200)
+        .json({ message: "updated successfully", userDetails });
     } catch (error) {
       return res
         .status(400)

@@ -170,7 +170,9 @@ exports.updateUser = async (req, res) => {
         return res.status(401).json({ message: updatedUser.message });
       }
 
-      return res.status(200).json(updatedUser);
+      return res
+        .status(200)
+        .json({ message: "updated successfully", updatedUser });
     } catch (error) {
       return res
         .status(400)
@@ -187,9 +189,7 @@ exports.getProfileDetails = async (req, res) => {
     try {
       const userId = req.user;
       const userDetails = await userServices.getProfileInfo(userId, "profile");
-      return res
-        .status(200)
-        .json({ message: "updated successfully", userDetails });
+      return res.status(200).json(userDetails);
     } catch (error) {
       return res
         .status(400)

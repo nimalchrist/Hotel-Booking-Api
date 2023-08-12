@@ -1,5 +1,4 @@
 const hotelService = require("../services/hotels.service");
-const mongoose = require("mongoose");
 const User = require("../models/users.model");
 
 exports.handleSearchRequest = async (req, res) => {

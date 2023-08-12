@@ -73,13 +73,11 @@ exports.updateUser = async (userId, updates) => {
 
     // Update other fields
     for (const key in updates) {
-      if (key !== "email" && key !== "phoneNumber") {
-        if (key === "password") {
-          // Encrypt the password if it exists in the updates object
-          user[key] = encryptionUtil.encrypt(updates[key]);
-        } else {
-          user[key] = updates[key];
-        }
+      if (key === "password") {
+        // Encrypt the password if it exists in the updates object
+        user[key] = encryptionUtil.encrypt(updates[key]);
+      } else {
+        user[key] = updates[key];
       }
     }
 
@@ -118,7 +116,6 @@ exports.getProfileInfo = async (user_id, detailsFor) => {
 exports.uploadImage = async (user_id, type, filename) => {
   try {
     const user = await usersModel.findById(user_id);
-    console.log(user);
     if (!user) {
       return { success: false };
     }
@@ -128,7 +125,6 @@ exports.uploadImage = async (user_id, type, filename) => {
       user.coverPicture = `http://localhost:3200/profiles/${filename}`;
     }
 
-    console.log(user);
     await user.save();
     return { success: true };
   } catch (error) {
@@ -196,42 +192,55 @@ exports.recent = async (user_id, hotel_id) => {
     { recentVisitsOfHotels: 1, _id: 0 }
   );
   const recents = result[0].recentVisitsOfHotels;
-  //if already present ingore push operation
+  //if already present, pos tion it at the end pf array
   if (recents.includes(hotel_id)) {
+    await usersModel.findByIdAndUpdate(
+      user_id,
+      { $pull: { recentVisitsOfHotels: hotel_id } },
+      { new: true }
+    );
+    await usersModel.findByIdAndUpdate(
+      user_id,
+      { $push: { recentVisitsOfHotels: hotel_id } },
+      { new: true }
+    );
+
     return await usersModel
       .find({ _id: user_id }, { recentVisitsOfHotels: 1, _id: 0 })
       .populate("recentVisitsOfHotels");
   }
-  
-     //if not present push into array
-    else{
-        console.log(recents.length)
-        // the array limit for recent visits is 10. So if array size exceeds, delete the last one and insert new hotel 
-        if(recents.length==10){
-             await usersModel.findByIdAndUpdate(user_id,{$pop:{recentVisitsOfHotels:-1}},{ new: true })
-        }
-        // if size is in the limit, just add the hotel_id
-         await usersModel.findByIdAndUpdate(user_id,{$push:{recentVisitsOfHotels: hotel_id}},{ new: true });
-       
-        return this.recent_search1(user_id);
-      }
+
+  //if not present push into array
+  else {
+    console.log(recents.length);
+    // the array limit for recent visits is 10. So if array size exceeds, delete the last one and insert new hotel
+    if (recents.length == 10) {
+      await usersModel.findByIdAndUpdate(
+        user_id,
+        { $pop: { recentVisitsOfHotels: -1 } },
+        { new: true }
+      );
+    }
+    // if size is in the limit, just add the hotel_id
+    await usersModel.findByIdAndUpdate(
+      user_id,
+      { $push: { recentVisitsOfHotels: hotel_id } },
+      { new: true }
+    );
+
+    return this.recent_search1(user_id);
   }
-    
+};
 
-
-// Fetch user details by ID along with decrypted card details
 exports.getUserCardDetails = async (userId) => {
   try {
-    // Find the user by user ID and project only the addedCards field
     const user = await usersModel.findOne({ _id: userId }, { addedCards: 1 });
 
     if (!user) {
       return { error: "User not found." };
     }
 
-    // Check if the user has saved cards
     if (user.addedCards.length > 0) {
-      // Decrypt the card details in the addedCards field
       const decryptedCards = user.addedCards.map((addedCard) => ({
         cardHolder: addedCard.cardHolder,
         cardNumber: decrypt(addedCard.cardNumber),
@@ -241,7 +250,6 @@ exports.getUserCardDetails = async (userId) => {
       }));
       return decryptedCards;
     } else {
-      // If the user has no saved cards, return a message
       return { message: "No saved cards." };
     }
   } catch (err) {
@@ -309,7 +317,6 @@ exports.addNewCard = async (userId, cardDetails) => {
   };
 
   try {
-    // Find the existing user by user ID
     const existingUser = await usersModel.findOne({ _id: userId });
     if (!existingUser) {
       return { error: "User not found." };

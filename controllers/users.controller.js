@@ -143,7 +143,7 @@ exports.loginController = (req, res, next) => {
   }
 };
 
-// specifically for navbar
+// specifically for navbar/ to check whether the user is logined
 exports.getNavbarDetails = async (req, res) => {
   if (req.isAuthenticated()) {
     try {
@@ -221,9 +221,7 @@ exports.uploadOrEditPicture = async (req, res) => {
       if (!filename) {
         return res.status(401).json({ message: "invalid image format" });
       }
-      console.log(filename);
       const type = req.body.type;
-      console.log(type);
 
       const response = await userServices.uploadImage(userId, type, filename);
       if (response.success) {
